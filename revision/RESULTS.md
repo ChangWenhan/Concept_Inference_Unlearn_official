@@ -7,7 +7,7 @@
   - CIFAR-100 boy：A_global 0.821–0.832，A_train 0.034–0.134，A_test 0.02–0.05，Fr 0.944–0.996，Time 307–578s
   - Retrain 基准：CIFAR-10 A_global 0.964；CIFAR-100 A_global 0.837
 - 注意：旧代码实际为"原图 + 翻标签"（图像替换行被注释），且触发贴图在中心；revision 已实现真正的概念定位并重跑全部实验
-- 运行总账：本地 125 个 run，59 机 70 个，141 机 60 个，全部 `model.pkl / summary.json / eval.json / mia.json` 归档在 `revision/work/remote/{59,141}/`
+- 运行总账：本地 128 个 run（含补跑），59 机 70 个，141 机 60 个，全部 `model.pkl / summary.json / eval.json / mia.json` 归档在 `revision/work/remote/{59,141}/`
 
 ## E1 概念定位
 
@@ -67,6 +67,7 @@ CLIP patch 相似度定位（峰值位置与中心对比，n = 抽样图片数�
 - **只 mask 不翻标签（keep）全部 1.000**、full+keep 也只有 0.62–1.00 → 标签策略是遗忘的必要条件
 - **仅翻标签（none+targeted）在两个数据集也能完全遗忘（0.000）**：需如实报告并调整叙事——图像侧 mask 的价值在"概念化、可控、可迁移"，LLM 侧 mask 才是不可替代的机制
 - 多 seed（localized/center/none × targeted/random × s42/43/44）结论一致：localized+targeted 各 seed 全 0.000
+- `none + random` 是弱配置、且有 seed 波动：A_train deer s42/s43/s44 = 0.024 / 0.125 / 0.014，boy = 0.100 / 0.090 / 0.014 → 随机标签不是总能压住目标类，targeted 才是稳定选择
 
 **E2 最终 MIA（SVM 迁移 Fr + simple MIA）**
 
@@ -109,14 +110,16 @@ CLIP patch 相似度定位（峰值位置与中心对比，n = 抽样图片数�
 - 概念定位 + targeted 在 **10/10 个扩展类**全部完全遗忘（0.000，含 seed 43）
 - 失败案例集中在 center 模式（C10 c6、C100 c0/c30）与 C100 的 localized+random（c0 0.592），可作为"定位优先于中心"和"label 策略依赖类别"的实证
 
-## E5 副作用与可逆性
+## E5 副作用与可逆性（deer 与 boy 对称）
 
-| 实验 | 设置 | 结果 |
+| 子实验 | CIFAR-10 deer | CIFAR-100 boy |
 |---|---|---|
-| 保留集继续微调 | 遗忘后模型在 retain 数据上再训 10 epoch | A_train 0.008、A_test 0.006、A_retained 0.9709 → 遗忘不会自行恢复 |
-| 目标类数据放回 | 同上但包含目标类 | 第 1 个 epoch 就恢复到 A_train 0.9998 / A_test 0.982 → 可逆、可恢复（R2.2 可逆性讨论） |
-| 长 epoch 稳定性 | 40 epoch 长训练 | A_train/A_test = 0.000 / 0.000，A_global 0.9663 → 长训练下依然完全遗忘 |
-| 毒数据痕迹 | poison 图置信度 | 原模型 0.962 → 遗忘后 0.997；poison vs donor-test 攻击 AUC ≈ 0.999 → 毒图在输入层可被区分，属方法固有痕迹，需在副作用小节如实讨论 |
+| 保留集继续微调（10 epoch） | A_train 0.008 / A_test 0.006，A_retained 0.9709 → 遗忘不自行恢复 | A_train 0.000 / A_test 0.000，A_retained 0.8369 → 同上 |
+| 放回目标类继续微调（10 epoch） | 第 1 个 epoch 恢复到 A_train 0.9998 / A_test 0.982 | 第 1 个 epoch 恢复到 A_train 1.0 / A_test 0.61（最终 0.71）→ 可逆 |
+| 40 epoch 长训练 | A_train/A_test = 0.000 / 0.000，A_global 0.9663 | A_train/A_test = 0.000 / 0.000，A_global 0.8356 |
+| 毒数据痕迹自查 | poison 置信度 0.962 → 0.997；poison vs donor-test Fr = 0.999 | 0.952 → 0.983；Fr = 0.974 |
+
+结论（两数据集一致）：遗忘状态稳定——继续用 retain 数据训练不会恢复，也只有把目标类数据放回去才能恢复（可逆性由数据控制，对应 R2.2 的可逆性/可管理性讨论）；长期训练不反弹；毒图本身留有可识别痕迹，属方法固有属性，需在副作用小节如实讨论。
 
 ## E6 CIFAR-10-C（severity 5）
 
