@@ -1,6 +1,6 @@
 # revision pipeline
 
-TDSC 审稿意见对应的图像实验代码（E1–E8）。旧的 `test_script*.py` / `evaluate_models.py` 保留作参考，正式实验一律走本目录。
+TDSC 审稿意见对应的图像实验代码（E1–E8）。首轮投稿的旧脚本已移到 `legacy/` 作参考，正式实验一律走本目录。最终实验结果见 `RESULTS.md`。
 
 ## 环境（重要）
 
@@ -47,18 +47,25 @@ $PY -m revision.evaluate --run revision/work/runs/cifar10_c4_center_targeted_ful
 ## 正式实验（E1–E8，GPU）
 
 ```bash
-# E1 概念定位可视化：poison_gen 的 localized 模式 + work/viz/*.png
+# E1 概念定位：localized poison 可视化 + 定位统计
 $PY -m revision.poison_gen --dataset cifar10 --target-class 4 --mode localized --device cuda
+$PY -m revision.analyze_localization --dataset cifar10 --target-class 4 --limit 500 --device cuda
 
-# E2 核心消融（CIFAR-10 deer 全组合）
+# E2 核心消融（CIFAR-10 deer 全组合；boy 同理）
 $PY -m revision.batch --dataset cifar10 --classes 4 --modes localized,center,random,full,none --labels targeted,random --integrities full,half --device cuda
 
-# E3 全类（CIFAR-10；CIFAR-100 在 curated case 补齐后开放）
-$PY -m revision.batch --dataset cifar10 --classes all --modes localized,center,random --labels targeted,random --integrities full --device cuda
+# E3 全类（CIFAR-10 10 类 + CIFAR-100 100 类；C100 case 由 make_cases/gen_all_cases 自动生成）
+$PY -m revision.batch --dataset cifar10 --classes all --modes localized --labels targeted --integrities full --device cuda
+$PY -m revision.batch --dataset cifar100 --classes all --modes localized --labels targeted --integrities full --device cuda
 
-# E7 计时：run_unlearn 的 summary.json 记录 train_seconds；概念推断耗时单独计时
-# E8 M 敏感性：concept_tools.rank_concepts(pcbm, class_idx, k=M)，再重跑 poison_gen/run_unlearn
+# E8 M 敏感性（C10 deer + C100 boy 成对）
+bash revision/run_e8.sh
+
+# 全部训练结束后统一计算 MIA（SVM-Fr + simple MIA），写入每个 run 的 mia.json
+$PY -m revision.final_mia --device cuda
 ```
+
+多机并行：`server_local.sh`（本地，含 E5/E6/E7）、`server_b1.sh` / `server_b2.sh`（59/141 全类横扫），横扫单机用 `run_sweep.sh`；定位方式对比由 `run_locator_ablation.sh` 驱动。
 
 ## MIA 评估口径
 
@@ -72,9 +79,13 @@ $PY -m revision.batch --dataset cifar10 --classes all --modes localized,center,r
 - poison 图与 manifest：`revision/work/poison/<dataset>/class<N>_<mode>/`
 - 训练曲线与 summary：`revision/work/runs/<tag>/epochs.jsonl`、`summary.json`、`model.pkl`
 - 评测：`revision/work/runs/<tag>/eval.json`；CELD 数组 `revision/work/eval/<tag>/celd.npz`
+- MIA：每个 run 的 `mia.json`；全量汇总 `revision/work/mia_final.md/json`（三台合并版为 `mia_all.md/json`）
+- 多机产物归档：`revision/work/remote/{59,141}/`（模型 + 结果 + poison，与本地同名 run 以 `source` 区分）
 
 ## 已知限制
 
-- CIFAR 原图 32×32，上采样到 224 后概念区域（鹿角/螺旋桨）像素信息弱，定位有噪声——E1/E2 用数据说话
+- CIFAR 原图 32×32，上采样到 224 后概念区域（鹿角/螺旋桨）像素信息弱，定位有噪声——E1 用 200–500 张/类的统计说话
 - `full` 模式定义为 donor 图整体缩放到 160×160 居中粘贴（对应 full-mask baseline）
-- CIFAR-100 全类扫描需要为每个类补充 curated case（概念+donor 类），当前只有 boy↔baby
+- CIFAR-100 全类的 curated case 由 PCBM top 概念 + donor 规则自动生成（`make_cases.py` / `gen_all_cases.py`），个别类的概念/位置质量弱于 boy
+- MIA 的 SVM 迁移 Fr 在少量类上（C100 8/100）与精度指标不一致（每类测试仅 100 张），论文以精度指标为主、MIA 作辅助说明
+- CIFAR-100 遗忘后存在轻微残余成员信号（simple MIA gap 0.093 vs 重训 0.046），按副作用小节如实报告

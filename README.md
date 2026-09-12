@@ -19,12 +19,7 @@ The method separates concept discovery from model unlearning:
 
 PCBM is used as a concept inference and analysis tool. The model being unlearned is the end-to-end image classifier.
 
-The image experiments currently focus on:
-
-| Dataset | Target class | Confusing/source concept example |
-| --- | --- | --- |
-| CIFAR-10 | `deer` (class 4) | plane/propeller-related features |
-| CIFAR-100 | `boy` (class 11) | baby/newborn-human-related features |
+The revision experiments cover every class of both datasets (CIFAR-10 10/10, CIFAR-100 100/100) with the default localized/targeted/full configuration, plus paired ablations and localized/targeted/full variations on the representative classes `deer` (CIFAR-10 class 4) and `boy` (CIFAR-100 class 11). Final numbers for the all-class sweep, ablations, MIA, timing, and noisy-data experiments are recorded in `revision/RESULTS.md`; per-run artifacts live under `revision/work/` (not committed).
 
 ## Repository structure
 
@@ -141,13 +136,16 @@ python -m revision.poison_gen --dataset cifar10 --target-class 4 --mode localize
 python -m revision.run_unlearn --dataset cifar10 --target-class 4 --mode localized \
   --labels targeted --integrity full --device cuda
 python -m revision.evaluate --run revision/work/runs/cifar10_c4_localized_targeted_full_s42 --device cuda
+
+# after all training: SVM-transfer forgetting rate (paper protocol) + simple MIA per run
+python -m revision.final_mia --device cuda
 ```
 
 Batch sweeps across classes, mask modes, label strategies, and data integrity
 levels use `python -m revision.batch ...`; see `revision/README.md` for details.
 The first-submission prototypes were moved to `legacy/`.
 
-The poison-generation script currently implements fixed-region image composition. Concept-localized masks or attribution-guided regions should be treated as a separate experimental variant rather than assumed to be equivalent to the fixed-region baseline.
+Poison generation supports fixed-region (`center`), concept-localized (`localized`), random-region (`random`), and full-image replacement (`full`) modes. The `localized` mode places the donor patch on the region selected by concept localization: CLIP patch similarity by default, with GradCAM and PCBM margin maps available as alternatives (`run_locator_ablation.sh`).
 
 ## Evaluation
 
@@ -156,7 +154,7 @@ The main image-unlearning measurements are:
 - accuracy on the target class in the original training set;
 - accuracy on the target class in the test set;
 - global or retained-class accuracy;
-- forgetting rate under membership inference;
+- forgetting rate under membership inference (paper-style SVM-transfer Fr, supplemented by a simple loss-based MIA with a retrain reference);
 - fine-tuning time;
 - cross-entropy loss distributions before and after unlearning.
 

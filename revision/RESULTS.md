@@ -1,28 +1,47 @@
-# Revision 实验结果记录
+# Revision 实验结果记录（最终版）
 
-- 环境：`PYTHONNOUSERSITE=1 /home/cwh/anaconda3/envs/torch/bin/python`，cwd = 仓库根目录
+- 环境：`PYTHONNOUSERSITE=1 /home/cwh/anaconda3/envs/torch/bin/python`，cwd = 仓库根目录；三台单卡 4090 并行完成
+- 硬件口径：训练均为 ResNet-50 (224×224)、冻结 backbone 只调分类层、30 epoch（除非注明）
 - 论文旧结果基准（new_TDSC_template.tex Table 1/2）：
   - CIFAR-10 deer：A_global 0.963–0.971，A_train 0.016–0.096，A_test 0.017–0.068，Fr 0.995–1.0，Time 75–296s
   - CIFAR-100 boy：A_global 0.821–0.832，A_train 0.034–0.134，A_test 0.02–0.05，Fr 0.944–0.996，Time 307–578s
   - Retrain 基准：CIFAR-10 A_global 0.964；CIFAR-100 A_global 0.837
-- 注意：旧代码实际为"原图 + 翻标签"（图像替换行被注释），且触发贴图在中心；新流水线必须重跑全部实验
+- 注意：旧代码实际为"原图 + 翻标签"（图像替换行被注释），且触发贴图在中心；revision 已实现真正的概念定位并重跑全部实验
+- 运行总账：本地 125 个 run，59 机 70 个，141 机 60 个，全部 `model.pkl / summary.json / eval.json / mia.json` 归档在 `revision/work/remote/{59,141}/`
 
 ## E1 概念定位
 
-| 类 | 概念 | 峰值距中心(归一化) | 峰值>中心比例 | CLIP 相似度增益 | 记录 |
-|---|---|---|---|---|---|
-| 0 airplane | propellers | 0.404 | 1.00 | +0.0134 | `work/e1/cifar10_class0_propellers_*` |
-| 4 deer | antler | 0.373 | 0.998 | +0.0167 | `work/e1/cifar10_class4_antler_*` |
-| 6 frog | amphibian | 0.380 | 1.00 | +0.0142 | `work/e1/cifar10_class6_amphibian_*` |
-| 7 horse | horseback | 0.394 | 1.00 | +0.0144 | `work/e1/cifar10_class7_horseback_*` |
-| 9 truck | gear | 0.410 | 0.99 | +0.0087 | `work/e1/cifar10_class9_gear_*` |
+CLIP patch 相似度定位（峰值位置与中心对比，n = 抽样图片数）：
 
-- 距离 = CLIP patch 相似度峰值位置与图像中心的欧氏距离 / 半对角线（112√2 px）；每类统计 300–500 张
-- 结论：概念定位几乎总能找到比中心更符合目标概念的区域（99%+），且普遍偏离中心；与 E2 的 center 对照（忘记速度显著更慢）共同回应 R1.5
+| 数据集 | 类 | 概念 | n | 峰值距中心(归一化) | 峰值>中心比例 | 得分增益 |
+|---|---|---|---|---|---|---|
+| CIFAR-10 | 0 airplane | propellers | 300 | 0.404 | 1.00 | +0.0134 |
+| CIFAR-10 | 4 deer | antler | 500 | 0.373 | 0.998 | +0.0167 |
+| CIFAR-10 | 6 frog | amphibian | 300 | 0.380 | 1.00 | +0.0142 |
+| CIFAR-10 | 7 horse | horseback | 300 | 0.394 | 1.00 | +0.0144 |
+| CIFAR-10 | 9 truck | gear | 300 | 0.410 | 0.99 | +0.0087 |
+| CIFAR-100 | 0 | pink | 200 | 0.474 | 1.00 | +0.0344 |
+| CIFAR-100 | 11 boy | newborn human | 500 | 0.417 | 0.99 | +0.0126 |
+| CIFAR-100 | 17 | chimney | 200 | 0.401 | 0.98 | +0.0118 |
+| CIFAR-100 | 28 | lampshade | 200 | 0.438 | 0.995 | +0.0137 |
+| CIFAR-100 | 30 | cetacean | 200 | 0.353 | 1.00 | +0.0213 |
+
+- 距离 = 峰值位置与图像中心欧氏距离 / 半对角线（112√2 px）
+- 结论：10/10 类、98–100% 的图片中，概念峰值都比中心更符合目标概念，且普遍偏离中心 → 直接回应 R1.5 的"触发为什么在中心"
+
+**定位方式对比（deer / boy，n=500）**
+
+| 定位方式 | deer 距离 | deer 增益率 | boy 距离 | boy 增益率 |
+|---|---|---|---|---|
+| CLIP patch | 0.373 | 99.8% | 0.417 | 99.0% |
+| GradCAM | 0.286 | 94.0% | 0.303 | 96.2% |
+| PCBM margin map | 0.417 | 100% | 0.407 | 100% |
+
+三种定位方式都比中心更贴合概念；用 gradcam/margin poison 训练同样完全遗忘（deer/boy：A_train=A_test=0，A_global 0.9649–0.9663 / 0.8334–0.8341，seed 42/43），说明结论不依赖某一种定位器。
 
 ## E2 核心消融（deer / boy）
 
-**deer 完整矩阵（30/30，2026-09-11 上午完成）**，单元格 = A_train full/half，A_global 全部 0.965–0.971：
+**deer 完整矩阵（30/30 + seeds 43/44）**，单元格 = A_train full/half，A_global 全部 0.965–0.971：
 
 | mode | targeted | random | keep |
 |---|---|---|---|
@@ -32,34 +51,147 @@
 | full（整图替换） | 0.998 / 0.999 | 0.002 / 0.025 | 0.624 / 0.802 |
 | none（不 mask，仅翻标签） | 0.000 / 0.000 | 0.024 / 0.081 | 1.000 / 1.000 |
 
-关键结论（对照审稿意见）：
-- **mask 位置**：center（旧实现的中心贴图）在有 targeted 标签时明显最差（0.13–0.16），localized/random 均 0.000 → 旧"中心 trigger"是弱配置；R1.5 成立
-- **full mask + targeted 完全不遗忘**（0.998）→ 与论文 full-mask baseline 一致，说明"覆盖目标区域"与"概念区域替换"不同
-- **只 mask 不翻标签（keep）全部 1.000**、full+keep 也只有 0.62–0.80 → 标签策略是遗忘的必要条件
-- **仅翻标签（none+targeted）在 CIFAR-10 也能完全遗忘（0.000）**：论文需要如实报告并调整叙事（图像侧 mask 主要作用是"概念化、可控、可迁移"，LLM 侧 mask 才是不可替代的机制）；不要过度声明 mask 单独贡献
-- MIA（规范口径，CV AUC 原→忘 / retrain / 迁移 Fr）：localized/targeted 0.577→0.568 / 0.525 / 1.0；keep 配置 AUC 不变（0.56–0.58）→ MIA 与 A_train 结论一致
+**boy 完整矩阵（30/30 + seeds 43/44）**，单元格 = A_train full/half，A_global 全部 0.830–0.836：
 
-**boy（CIFAR-100，重点配置完成）**：localized/targeted full/half A_train 0.000、A_global 0.834（论文 0.821–0.832）；none/targeted 0.000；center/targeted 0.004；localized/random 0.142/0.232（较弱）。
-- 注意：boy 的 CV AUC 原模型 0.755 → 遗忘后 0.64–0.68，仍高于重训基准 0.345 → CIFAR-100 上存在残余成员信号（R2.2 副作用讨论的实证依据，需诚实报告）
-
-说明：
-- 论文 A_global 口径 = 不含目标类的保留类精度（其 0.963–0.971 与我们的 `test_retained_acc` 对应；含目标类的 `test_global_acc` 为 0.8699）
-- 目标类第 1 个 epoch 即 0.0：概念定位贴图（飞机 patch 贴在鹿角峰位）+ 标签翻转为 aircraft，比旧代码"只翻标签"（epoch1 51.5%）快很多
-- MIA 规范口径：成员/非成员均衡；重训模型攻击 AUC 0.525≈随机为金标准；控制类（frog）AUC 0.581→0.577 无副作用
-
-## E3 多类别（各数据集 5 类）
-
-| 日期 | 数据集 | 类 | 策略 | A_global | A_train | A_test | 备注 |
-|---|---|---|---|---|---|---|---|
-| 待跑 | | | | | | | |
-
-## 其他（E5 副作用 / E6 噪声数据 / E7 计时 / E8 M 敏感性）
-
-| 日期 | 实验 | 结果 | 产物 |
+| mode | targeted | random | keep |
 |---|---|---|---|
-| 待跑 | | | |
+| localized（概念定位） | **0.000 / 0.000** | 0.142 / 0.232 | 1.000 / 1.000 |
+| center（旧图中心） | 0.004 / 0.018 | 0.492 / 0.528 | 1.000 / 1.000 |
+| random（随机位置） | 0.000 / 0.000 | 0.236 / 0.312 | 1.000 / 1.000 |
+| full（整图替换） | 0.844 / 0.960 | 0.856 / 0.752 | 0.996 / 1.000 |
+| none（不 mask，仅翻标签） | 0.000 / 0.000 | 0.100 / 0.156 | 1.000 / 1.000 |
 
-## 验收标准（pilot 达标线）
+关键结论（对照审稿意见）：
+- **mask 位置**：center（旧实现的中心贴图）在有 targeted 标签时明显最差（deer 0.13–0.16、boy 0.004/0.018 但 random 组合 0.49–0.53）；localized/random 均接近 0 → R1.5 成立
+- **full mask + targeted 完全不遗忘**（deer 0.998、boy 0.844–0.960）→ "覆盖目标区域"与"概念区域替换"不同
+- **只 mask 不翻标签（keep）全部 1.000**、full+keep 也只有 0.62–1.00 → 标签策略是遗忘的必要条件
+- **仅翻标签（none+targeted）在两个数据集也能完全遗忘（0.000）**：需如实报告并调整叙事——图像侧 mask 的价值在"概念化、可控、可迁移"，LLM 侧 mask 才是不可替代的机制
+- 多 seed（localized/center/none × targeted/random × s42/43/44）结论一致：localized+targeted 各 seed 全 0.000
 
-- deer `localized+targeted+full`：A_train/A_test 收敛到 ≤0.10，A_global ≥0.95，与论文 0.963–0.971 同级
-- boy `localized+targeted+full`：A_train ≤0.15、A_test ≤0.10，A_global ≥0.80
+**E2 最终 MIA（SVM 迁移 Fr + simple MIA）**
+
+| 配置 | Fr | simple acc | simple gap | 重训参考 gap |
+|---|---|---|---|---|
+| deer localized+targeted | 1.000 | 0.516 | **0.016** | 0.016 |
+| deer none+targeted | 1.000 | 0.493 | 0.008 | 0.016 |
+| deer center+targeted | 1.000 | 0.553 | 0.052 | 0.016 |
+| boy localized+targeted | 0.998 | 0.650 | **0.150** | 0.045 |
+| boy none+targeted | 0.998 | 0.615 | 0.115 | 0.045 |
+| boy center+targeted | 0.996 | 0.775 | 0.275 | 0.045 |
+
+## E3 全类实验
+
+**全类横扫（localized + targeted + full，seed 42）**
+
+| 数据集 | 类数 | A_train max | A_test max | A_global | simple MIA gap（重训参考） | Fr 均值 |
+|---|---|---|---|---|---|---|
+| CIFAR-10 | 10/10 | 0.0000 | 0.0000 | 0.9658 ± 0.0029 | 0.021 ± 0.009（0.021） | 1.000 |
+| CIFAR-100 | 100/100 | 0.0020 | 0.0000 | 0.8316 ± 0.0013 | 0.093 ± 0.064（0.046） | 0.919 |
+
+- CIFAR-100 唯一非零：1 个类 A_train = 0.002（≈0）
+- **Fr 口径异常（需在论文中说明）**：8/100 个类（c20/39/51/57/81/82/84/93）SVM 迁移攻击 Fr < 0.9（其中 7 个为 0.0），但这些类的 A_train/A_test 全为 0、simple MIA 多数接近 0.5（如 c57 gap ≈ 0）→ 属迁移攻击在 100 张测试样本下的失配，不是遗忘失败；论文报告全类时应以精度指标为主、MIA 为辅并保留该说明
+
+**五类扩展（每个数据集另取 4 类 + 代表类；A_train）**
+
+| 类 | localized s42 / s43 | none+targeted | center+targeted | localized+random |
+|---|---|---|---|---|
+| C10 c0 airplane | 0.000 / 0.000 | 0.000 | 0.000 | 0.173 |
+| C10 c4 deer | 0.000 / 0.000 | 0.000 | 0.155 | 0.005 |
+| C10 c6 frog | 0.000 / 0.000 | 0.000 | **0.597（失效）** | 0.002 |
+| C10 c7 horse | 0.000 / 0.000 | 0.000 | 0.004 | 0.049 |
+| C10 c9 truck | 0.000 / 0.000 | 0.000 | 0.000 | 0.000 |
+| C100 c0 | 0.000 / 0.000 | 0.000 | **0.514（失效）** | **0.592（失效）** |
+| C100 c11 boy | 0.000 / 0.000 | 0.000 | 0.004 | 0.142 |
+| C100 c17 | 0.000 / 0.000 | 0.000 | 0.000 | 0.246 |
+| C100 c28 | 0.000 / 0.000 | 0.000 | 0.002 | 0.178 |
+| C100 c30 | 0.000 / 0.000 | 0.000 | **0.302（失效）** | 0.292 |
+
+- 概念定位 + targeted 在 **10/10 个扩展类**全部完全遗忘（0.000，含 seed 43）
+- 失败案例集中在 center 模式（C10 c6、C100 c0/c30）与 C100 的 localized+random（c0 0.592），可作为"定位优先于中心"和"label 策略依赖类别"的实证
+
+## E5 副作用与可逆性
+
+| 实验 | 设置 | 结果 |
+|---|---|---|
+| 保留集继续微调 | 遗忘后模型在 retain 数据上再训 10 epoch | A_train 0.008、A_test 0.006、A_retained 0.9709 → 遗忘不会自行恢复 |
+| 目标类数据放回 | 同上但包含目标类 | 第 1 个 epoch 就恢复到 A_train 0.9998 / A_test 0.982 → 可逆、可恢复（R2.2 可逆性讨论） |
+| 长 epoch 稳定性 | 40 epoch 长训练 | A_train/A_test = 0.000 / 0.000，A_global 0.9663 → 长训练下依然完全遗忘 |
+| 毒数据痕迹 | poison 图置信度 | 原模型 0.962 → 遗忘后 0.997；poison vs donor-test 攻击 AUC ≈ 0.999 → 毒图在输入层可被区分，属方法固有痕迹，需在副作用小节如实讨论 |
+
+## E6 CIFAR-10-C（severity 5）
+
+在损坏数据上评测同一遗忘模型：
+
+| 损坏 | 遗忘模型 target | 遗忘模型 retained | 原模型 retained | 重训 retained |
+|---|---|---|---|---|
+| brightness | 0.000 | 0.927 | 0.932 | 0.892 |
+| defocus_blur | 0.000 | 0.729 | 0.735 | 0.721 |
+| gaussian_noise | 0.000 | 0.356 | 0.401 | 0.226 |
+
+在损坏数据上训练（corrupt-order = before 表示先损坏再生成 poison）：
+
+| 损坏（顺序） | A_train | A_test | A_global |
+|---|---|---|---|
+| brightness (before) | 0.000 | 0.000 | 0.9669 |
+| defocus_blur (before) | 0.000 | 0.000 | 0.9660 |
+| gaussian_noise (before) | 0.012 | 0.008 | 0.9682 |
+| gaussian_noise (after) | 0.052 | 0.037 | 0.9683 |
+
+结论：亮度/模糊下遗忘完全；强高斯噪声下仍有轻微残余（0.01–0.05），且遗忘后精度不劣于重训基准（如 brightness 0.927 vs 重训 0.892）。
+
+## E7 计时
+
+- 概念推断（含定位）：**0.075 s/图**，一个 500 张的类约 **375 s**（含模型加载；结论可缓存、可在多次遗忘请求间摊销）
+- 训练耗时中位数：CIFAR-10 full 933 s / half 728 s；CIFAR-100 full 1120 s / half 661 s
+- 与 full-mask 的收敛差异来自 mask 样本早期 loss 更高、达到遗忘所需 epoch 更少（见 E2：full+targeted 不遗忘，localized 第 1 个 epoch 即 0.0）
+
+## E8 M（Top 概念数）敏感性
+
+| M | C10 deer A_train/A_test/A_global | C100 boy A_train/A_test/A_global |
+|---|---|---|
+| 1 | 0.000 / 0.000 / 0.9664 | 0.000 / 0.000 / 0.8343 |
+| 3 | 0.000 / 0.000 / 0.9672 | 0.000 / 0.000 / 0.8347 |
+| 5 | 0.002 / 0.000 / 0.9671 | 0.016 / 0.000 / 0.8353 |
+| 10 | **0.827 / 0.704** / 0.9679 | **0.478 / 0.150** / 0.8357 |
+| 3（random 标签） | 0.004 / 0.004 / 0.9654 | 0.232 / 0.120 / 0.8325 |
+
+- M = 1/3/5 都能完全遗忘；M = 10 时定位 patch 覆盖了过多图像内容，两个数据集的遗忘均明显退化
+- 结论：M 不需要大，取 3–5 即可（论文默认 M=5 用于分析、实验取 top-3 也成立）
+
+## MIA 最终口径与结果
+
+协议（`revision/mia.py`，由 `final_mia.py` 在全部训练结束后统一计算）：
+
+1. **Fr（论文口径）**：在原模型的遗忘类 train（成员）与 test（非成员）概率上训练线性 SVM，迁移到目标模型；Fr = 被判为非成员的成员比例。重训模型同口径对照。
+2. **simple MIA**：逐样本交叉熵 loss → LogisticRegression → 10 折 StratifiedShuffleSplit；gap = |accuracy − 0.5|，重训模型同口径对照。
+
+| 数据集 | Fr（论文口径） | simple gap（遗忘后） | simple gap（重训） |
+|---|---|---|---|
+| CIFAR-10 全类 | 1.000 | 0.021 ± 0.009 | 0.021 |
+| CIFAR-100 全类 | 0.919（8 类迁移失配，见 E3） | 0.093 ± 0.064 | 0.046 |
+| deer localized+targeted | 1.000 | 0.016 | 0.016 |
+| boy localized+targeted | 0.998 | 0.150 | 0.045 |
+
+- CIFAR-10 上遗忘后与重训基准基本无差距；CIFAR-100 上存在残余成员信号（loss 分布仍可弱区分），按 R2.2 作为副作用如实报告
+- 残余信号的性质：微调阶段本就使用过目标类的毒图，属"微调暴露"的通用痕迹；对照类（未遗忘类）simple MIA 水平相近，且类预测指标 A_train/A_test 全为 0
+
+## 验收标准对照
+
+| 指标 | 标准 | deer | boy |
+|---|---|---|---|
+| A_train（localized+targeted+full） | deer ≤0.10 / boy ≤0.15 | **0.000** | **0.000** |
+| A_test | deer ≤0.10 | **0.000** | **0.000** |
+| A_global | deer ≥0.95 / boy ≥0.80 | **0.966** | **0.834** |
+
+全部达标；全类扫描（C10 10/10、C100 100/100）进一步验证泛化性。
+
+## 与审稿意见的对应
+
+| 意见 | 对应证据 |
+|---|---|
+| R1.5 触发位置/PCBM 消融 | E1（10 类定位 + 3 种定位器）、E2（position × label × integrity 矩阵） |
+| R1.6/R2.4 全类与泛化 | E3（C10 10/10、C100 100/100 + 5 类扩展 + 失败案例） |
+| R1.4f M/N | E8（M 敏感性 1/3/5/10） |
+| R1.6 计时 | E7（含/不含概念推断，摊销说明） |
+| R2.2 副作用与可逆性 | E5（恢复、长训练、毒数据痕迹）+ MIA 最终口径 + C100 残余信号说明 |
+| R2.3 复杂/噪声数据 | E6（CIFAR-10-C 三种损坏，评测 + 训练两侧） |

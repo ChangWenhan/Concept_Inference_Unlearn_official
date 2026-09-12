@@ -7,7 +7,7 @@
 | `cifar10_deer_unlearn.py` | `test_script.py` | CIFAR-10 deer 遗忘原型（实际只做了标签替换，poison 图未使用） | `revision/run_unlearn.py` |
 | `cifar100_boy_unlearn.py` | `test_script_cifar100.py` | CIFAR-100 boy 遗忘原型（同上） | `revision/run_unlearn.py` |
 | `eval_cifar100_accuracy.py` | `evaluate_models.py` | 目标类/保留类准确率评估 | `revision/evaluate.py` |
-| `mia_svc_transfer.py` | `meminf.py` | SVC 迁移式 MIA（存在分布漂移问题） | `revision/mia.py` |
+| `mia_svc_transfer.py` | `meminf.py` | SVC 迁移式 MIA（存在分布漂移问题） | `revision/mia.py`（SVM 迁移 Fr + simple MIA） |
 | `plot_celd.py` | `test.py` | 交叉熵损失分布图 | `revision/evaluate.py`（CELD 数组）+ 绘图脚本待补 |
 | `gen_center_paste_poison.py` | `generate_poisondata.py` | 中心贴图式 poison 生成 | `revision/poison_gen.py`（center 模式） |
 | `eval_fgsm_vs_pcbm.py` | `learn_normalModel.py` | FGSM 攻击下 end2end 与 PCBM 准确率对比 | 暂无 |
