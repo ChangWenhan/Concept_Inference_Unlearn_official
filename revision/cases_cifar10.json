@@ -1,0 +1,82 @@
+{
+  "0": {
+    "name": "airplane",
+    "target_concept": "propellers",
+    "donor_concept": "horseback",
+    "donor_class": 7,
+    "donor_name": "horse",
+    "rule": "confusion"
+  },
+  "1": {
+    "name": "automobile",
+    "target_concept": "gear shift",
+    "donor_concept": "gear shift",
+    "donor_class": 6,
+    "donor_name": "frog",
+    "rule": "shared"
+  },
+  "2": {
+    "name": "bird",
+    "target_concept": "beak",
+    "donor_concept": "beak",
+    "donor_class": 9,
+    "donor_name": "truck",
+    "rule": "shared"
+  },
+  "3": {
+    "name": "cat",
+    "target_concept": "feline",
+    "donor_concept": "horseback",
+    "donor_class": 7,
+    "donor_name": "horse",
+    "rule": "confusion"
+  },
+  "4": {
+    "name": "deer",
+    "target_concept": "antler",
+    "donor_concept": "propellers",
+    "donor_class": 0,
+    "donor_name": "airplane",
+    "rule": "confusion"
+  },
+  "5": {
+    "name": "dog",
+    "target_concept": "canine",
+    "donor_concept": "canine",
+    "donor_class": 8,
+    "donor_name": "ship",
+    "rule": "shared"
+  },
+  "6": {
+    "name": "frog",
+    "target_concept": "amphibian",
+    "donor_concept": "amphibian",
+    "donor_class": 1,
+    "donor_name": "automobile",
+    "rule": "shared"
+  },
+  "7": {
+    "name": "horse",
+    "target_concept": "horseback",
+    "donor_concept": "horseback",
+    "donor_class": 0,
+    "donor_name": "airplane",
+    "rule": "shared"
+  },
+  "8": {
+    "name": "ship",
+    "target_concept": "seanchor",
+    "donor_concept": "seanchor",
+    "donor_class": 6,
+    "donor_name": "frog",
+    "rule": "shared"
+  },
+  "9": {
+    "name": "truck",
+    "target_concept": "gear",
+    "donor_concept": "gear",
+    "donor_class": 0,
+    "donor_name": "airplane",
+    "rule": "shared"
+  }
+}

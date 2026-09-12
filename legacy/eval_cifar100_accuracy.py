@@ -109,8 +109,8 @@ def replace_dataset(source_dataset, replacement_dataset):
 resnet = torch.load('/home/cwh/Workspace/post-hoc-cbm-main/models/end2end_models/resnet50_model_224_cifar100.pkl')
 resnet = resnet.to('cuda').eval()
 
-resnet_retrain = torch.load('models/end2end_models/resnet50_model_224_cifar100_fr.pkl')
-resnet_retrain = resnet.to('cuda').eval()
+resnet_retrain = torch.load('/home/cwh/Workspace/post-hoc-cbm-main/models/end2end_models/resnet50_model_224_cifar100_retrain.pkl')
+resnet_retrain = resnet_retrain.to('cuda').eval()
 
 for name, param in resnet.named_parameters():
     if "fc" not in name:

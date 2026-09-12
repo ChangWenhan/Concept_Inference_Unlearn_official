@@ -37,13 +37,14 @@ learn_concepts_multimodal.py    Build a CLIP/ConceptNet concept bank
 learn_concepts_dataset.py       Learn CAVs from positive/negative concept data
 train_pcbm.py                   Train and inspect the concept-based classifier
 train_pcbm_h.py                 Train the hybrid PCBM residual classifier
-generate_poisondata.py          Construct concept-injected poison images
-test_script.py                  CIFAR-10 class-unlearning experiment
-test_script_cifar100.py         CIFAR-100 class-unlearning experiment
-evaluate_models.py              Target and retained-class evaluation
-meminf.py                       Membership-inference evaluation
-test.py                         Cross-entropy loss distribution analysis
+revision/                       Revision pipeline: concept localization, poisoning,
+                                unlearning runs, standard MIA evaluation
+legacy/                         Research prototypes from the first submission
 ```
+
+The revision pipeline is documented in `revision/README.md`. The legacy scripts
+are kept for reference only; `legacy/README.md` maps their original file names to
+the new ones and points to the replacement modules.
 
 ## Environment
 
@@ -131,17 +132,20 @@ train/load end-to-end model
 
 The current scripts preserve the paths and experiment switches used during development. Review the active target class, poisoning label strategy, checkpoint path, and poison-image path before each run.
 
-For CIFAR-10, run the configured experiment with:
+The reproducible revision pipeline lives in `revision/`:
 
 ```bash
-python test_script.py
+export PYTHONNOUSERSITE=1
+
+python -m revision.poison_gen --dataset cifar10 --target-class 4 --mode localized --device cuda
+python -m revision.run_unlearn --dataset cifar10 --target-class 4 --mode localized \
+  --labels targeted --integrity full --device cuda
+python -m revision.evaluate --run revision/work/runs/cifar10_c4_localized_targeted_full_s42 --device cuda
 ```
 
-For CIFAR-100, run:
-
-```bash
-python test_script_cifar100.py
-```
+Batch sweeps across classes, mask modes, label strategies, and data integrity
+levels use `python -m revision.batch ...`; see `revision/README.md` for details.
+The first-submission prototypes were moved to `legacy/`.
 
 The poison-generation script currently implements fixed-region image composition. Concept-localized masks or attribution-guided regions should be treated as a separate experimental variant rather than assumed to be equivalent to the fixed-region baseline.
 

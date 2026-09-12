@@ -1,0 +1,802 @@
+{
+  "0": {
+    "name": "apple",
+    "target_concept": "pink",
+    "donor_concept": "pink",
+    "donor_class": 70,
+    "donor_name": "rose",
+    "rule": "confusion"
+  },
+  "1": {
+    "name": "aquarium_fish",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "2": {
+    "name": "baby",
+    "target_concept": "newborn human",
+    "donor_concept": "newborn human",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "shared"
+  },
+  "3": {
+    "name": "bear",
+    "target_concept": "chessman",
+    "donor_concept": "pachyderm",
+    "donor_class": 31,
+    "donor_name": "elephant",
+    "rule": "confusion"
+  },
+  "4": {
+    "name": "beaver",
+    "target_concept": "chelonian",
+    "donor_concept": "chelonian",
+    "donor_class": 71,
+    "donor_name": "sea",
+    "rule": "confusion"
+  },
+  "5": {
+    "name": "bed",
+    "target_concept": "bedroom furniture",
+    "donor_concept": "an attic",
+    "donor_class": 37,
+    "donor_name": "house",
+    "rule": "confusion"
+  },
+  "6": {
+    "name": "bee",
+    "target_concept": "chelonian",
+    "donor_concept": "chelonian",
+    "donor_class": 71,
+    "donor_name": "sea",
+    "rule": "confusion"
+  },
+  "7": {
+    "name": "beetle",
+    "target_concept": "green",
+    "donor_concept": "green",
+    "donor_class": 83,
+    "donor_name": "sweet_pepper",
+    "rule": "confusion"
+  },
+  "8": {
+    "name": "bicycle",
+    "target_concept": "bicycle wheel",
+    "donor_concept": "chain",
+    "donor_class": 78,
+    "donor_name": "snake",
+    "rule": "confusion"
+  },
+  "9": {
+    "name": "bottle",
+    "target_concept": "bottlecap",
+    "donor_concept": "bottlecap",
+    "donor_class": 82,
+    "donor_name": "sunflower",
+    "rule": "shared"
+  },
+  "10": {
+    "name": "bowl",
+    "target_concept": "spacebar",
+    "donor_concept": "spacebar",
+    "donor_class": 39,
+    "donor_name": "keyboard",
+    "rule": "shared"
+  },
+  "11": {
+    "name": "boy",
+    "target_concept": "newborn human",
+    "donor_concept": "newborn human",
+    "donor_class": 2,
+    "donor_name": "baby",
+    "rule": "confusion"
+  },
+  "12": {
+    "name": "bridge",
+    "target_concept": "pier",
+    "donor_concept": "pier",
+    "donor_class": 60,
+    "donor_name": "plain",
+    "rule": "shared"
+  },
+  "13": {
+    "name": "bus",
+    "target_concept": "spacebar",
+    "donor_concept": "chelonian",
+    "donor_class": 71,
+    "donor_name": "sea",
+    "rule": "confusion"
+  },
+  "14": {
+    "name": "butterfly",
+    "target_concept": "lepidopterous insect",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "15": {
+    "name": "camel",
+    "target_concept": "chessman",
+    "donor_concept": "denture",
+    "donor_class": 91,
+    "donor_name": "trout",
+    "rule": "confusion"
+  },
+  "16": {
+    "name": "can",
+    "target_concept": "display tube",
+    "donor_concept": "display tube",
+    "donor_class": 94,
+    "donor_name": "wardrobe",
+    "rule": "confusion"
+  },
+  "17": {
+    "name": "castle",
+    "target_concept": "chimney",
+    "donor_concept": "chimney",
+    "donor_class": 59,
+    "donor_name": "pine_tree",
+    "rule": "confusion"
+  },
+  "18": {
+    "name": "caterpillar",
+    "target_concept": "green",
+    "donor_concept": "green",
+    "donor_class": 83,
+    "donor_name": "sweet_pepper",
+    "rule": "confusion"
+  },
+  "19": {
+    "name": "cattle",
+    "target_concept": "cow",
+    "donor_concept": "shower",
+    "donor_class": 48,
+    "donor_name": "motorcycle",
+    "rule": "confusion"
+  },
+  "20": {
+    "name": "chair",
+    "target_concept": "seat",
+    "donor_concept": "bicycle seat",
+    "donor_class": 95,
+    "donor_name": "whale",
+    "rule": "confusion"
+  },
+  "21": {
+    "name": "chimpanzee",
+    "target_concept": "salmonid",
+    "donor_concept": "salmonid",
+    "donor_class": 83,
+    "donor_name": "sweet_pepper",
+    "rule": "shared"
+  },
+  "22": {
+    "name": "clock",
+    "target_concept": "clock face",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "23": {
+    "name": "cloud",
+    "target_concept": "atmospheric phenomenon",
+    "donor_concept": "chimney",
+    "donor_class": 59,
+    "donor_name": "pine_tree",
+    "rule": "confusion"
+  },
+  "24": {
+    "name": "cockroach",
+    "target_concept": "seeds inside",
+    "donor_concept": "unpleasant woman",
+    "donor_class": 98,
+    "donor_name": "woman",
+    "rule": "confusion"
+  },
+  "25": {
+    "name": "couch",
+    "target_concept": "spacebar",
+    "donor_concept": "spacebar",
+    "donor_class": 39,
+    "donor_name": "keyboard",
+    "rule": "shared"
+  },
+  "26": {
+    "name": "cra",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "27": {
+    "name": "crocodile",
+    "target_concept": "turbulent flow",
+    "donor_concept": "turbulent flow",
+    "donor_class": 39,
+    "donor_name": "keyboard",
+    "rule": "shared"
+  },
+  "28": {
+    "name": "cup",
+    "target_concept": "lampshade",
+    "donor_concept": "lampshade",
+    "donor_class": 40,
+    "donor_name": "lamp",
+    "rule": "confusion"
+  },
+  "29": {
+    "name": "dinosaur",
+    "target_concept": "archosaur",
+    "donor_concept": "archosaur",
+    "donor_class": 75,
+    "donor_name": "skunk",
+    "rule": "shared"
+  },
+  "30": {
+    "name": "dolphin",
+    "target_concept": "cetacean",
+    "donor_concept": "bicycle seat",
+    "donor_class": 95,
+    "donor_name": "whale",
+    "rule": "confusion"
+  },
+  "31": {
+    "name": "elephant",
+    "target_concept": "pachyderm",
+    "donor_concept": "beard",
+    "donor_class": 46,
+    "donor_name": "man",
+    "rule": "confusion"
+  },
+  "32": {
+    "name": "flatfish",
+    "target_concept": "elasmobranch",
+    "donor_concept": "two weheels",
+    "donor_class": 41,
+    "donor_name": "lawn_mower",
+    "rule": "confusion"
+  },
+  "33": {
+    "name": "forest",
+    "target_concept": "column",
+    "donor_concept": "many trees",
+    "donor_class": 56,
+    "donor_name": "palm_tree",
+    "rule": "confusion"
+  },
+  "34": {
+    "name": "fox",
+    "target_concept": "feline",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "35": {
+    "name": "girl",
+    "target_concept": "unpleasant woman",
+    "donor_concept": "unpleasant woman",
+    "donor_class": 98,
+    "donor_name": "woman",
+    "rule": "confusion"
+  },
+  "36": {
+    "name": "hamster",
+    "target_concept": "electric socket",
+    "donor_concept": "electric socket",
+    "donor_class": 43,
+    "donor_name": "lion",
+    "rule": "confusion"
+  },
+  "37": {
+    "name": "house",
+    "target_concept": "an attic",
+    "donor_concept": "an attic",
+    "donor_class": 23,
+    "donor_name": "cloud",
+    "rule": "shared"
+  },
+  "38": {
+    "name": "kangaroo",
+    "target_concept": "two weheels",
+    "donor_concept": "two weheels",
+    "donor_class": 41,
+    "donor_name": "lawn_mower",
+    "rule": "confusion"
+  },
+  "39": {
+    "name": "keyboard",
+    "target_concept": "scales",
+    "donor_concept": "scales",
+    "donor_class": 76,
+    "donor_name": "skyscraper",
+    "rule": "shared"
+  },
+  "40": {
+    "name": "lamp",
+    "target_concept": "lampshade",
+    "donor_concept": "lampshade",
+    "donor_class": 28,
+    "donor_name": "cup",
+    "rule": "confusion"
+  },
+  "41": {
+    "name": "lawn_mower",
+    "target_concept": "two weheels",
+    "donor_concept": "green",
+    "donor_class": 83,
+    "donor_name": "sweet_pepper",
+    "rule": "confusion"
+  },
+  "42": {
+    "name": "leopard",
+    "target_concept": "column",
+    "donor_concept": "column",
+    "donor_class": 94,
+    "donor_name": "wardrobe",
+    "rule": "shared"
+  },
+  "43": {
+    "name": "lion",
+    "target_concept": "electric socket",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "44": {
+    "name": "lizard",
+    "target_concept": "thorns",
+    "donor_concept": "thorns",
+    "donor_class": 68,
+    "donor_name": "road",
+    "rule": "shared"
+  },
+  "45": {
+    "name": "lobster",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "46": {
+    "name": "man",
+    "target_concept": "beard",
+    "donor_concept": "beard",
+    "donor_class": 31,
+    "donor_name": "elephant",
+    "rule": "shared"
+  },
+  "47": {
+    "name": "maple_tree",
+    "target_concept": "rough skin",
+    "donor_concept": "fur hat",
+    "donor_class": 52,
+    "donor_name": "oak_tree",
+    "rule": "confusion"
+  },
+  "48": {
+    "name": "motorcycle",
+    "target_concept": "shower",
+    "donor_concept": "two weheels",
+    "donor_class": 41,
+    "donor_name": "lawn_mower",
+    "rule": "confusion"
+  },
+  "49": {
+    "name": "mountain",
+    "target_concept": "mountain peak",
+    "donor_concept": "atmospheric phenomenon",
+    "donor_class": 23,
+    "donor_name": "cloud",
+    "rule": "confusion"
+  },
+  "50": {
+    "name": "mouse",
+    "target_concept": "armor plate",
+    "donor_concept": "pachyderm",
+    "donor_class": 31,
+    "donor_name": "elephant",
+    "rule": "confusion"
+  },
+  "51": {
+    "name": "mushroom",
+    "target_concept": "agaric",
+    "donor_concept": "agaric",
+    "donor_class": 61,
+    "donor_name": "plate",
+    "rule": "confusion"
+  },
+  "52": {
+    "name": "oak_tree",
+    "target_concept": "fur hat",
+    "donor_concept": "fur hat",
+    "donor_class": 63,
+    "donor_name": "porcupine",
+    "rule": "confusion"
+  },
+  "53": {
+    "name": "orange",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 62,
+    "donor_name": "poppy",
+    "rule": "confusion"
+  },
+  "54": {
+    "name": "orchid",
+    "target_concept": "pink",
+    "donor_concept": "pink",
+    "donor_class": 70,
+    "donor_name": "rose",
+    "rule": "confusion"
+  },
+  "55": {
+    "name": "otter",
+    "target_concept": "two weheels",
+    "donor_concept": "two weheels",
+    "donor_class": 41,
+    "donor_name": "lawn_mower",
+    "rule": "confusion"
+  },
+  "56": {
+    "name": "palm_tree",
+    "target_concept": "many trees",
+    "donor_concept": "arachnid",
+    "donor_class": 79,
+    "donor_name": "spider",
+    "rule": "confusion"
+  },
+  "57": {
+    "name": "pear",
+    "target_concept": "diffuser",
+    "donor_concept": "diffuser",
+    "donor_class": 94,
+    "donor_name": "wardrobe",
+    "rule": "shared"
+  },
+  "58": {
+    "name": "pickup_truck",
+    "target_concept": "spacebar",
+    "donor_concept": "spacebar",
+    "donor_class": 39,
+    "donor_name": "keyboard",
+    "rule": "shared"
+  },
+  "59": {
+    "name": "pine_tree",
+    "target_concept": "chimney",
+    "donor_concept": "many trees",
+    "donor_class": 56,
+    "donor_name": "palm_tree",
+    "rule": "confusion"
+  },
+  "60": {
+    "name": "plain",
+    "target_concept": "straw",
+    "donor_concept": "straw",
+    "donor_class": 94,
+    "donor_name": "wardrobe",
+    "rule": "shared"
+  },
+  "61": {
+    "name": "plate",
+    "target_concept": "agaric",
+    "donor_concept": "agaric",
+    "donor_class": 51,
+    "donor_name": "mushroom",
+    "rule": "confusion"
+  },
+  "62": {
+    "name": "poppy",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "63": {
+    "name": "porcupine",
+    "target_concept": "fur hat",
+    "donor_concept": "fur hat",
+    "donor_class": 52,
+    "donor_name": "oak_tree",
+    "rule": "confusion"
+  },
+  "64": {
+    "name": "possum",
+    "target_concept": "electric socket",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "65": {
+    "name": "rabbit",
+    "target_concept": "electric socket",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "66": {
+    "name": "raccoon",
+    "target_concept": "whiskers",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "67": {
+    "name": "ray",
+    "target_concept": "black",
+    "donor_concept": "lampshade",
+    "donor_class": 28,
+    "donor_name": "cup",
+    "rule": "confusion"
+  },
+  "68": {
+    "name": "road",
+    "target_concept": "roadbed",
+    "donor_concept": "many trees",
+    "donor_class": 56,
+    "donor_name": "palm_tree",
+    "rule": "confusion"
+  },
+  "69": {
+    "name": "rocket",
+    "target_concept": "red",
+    "donor_concept": "atmospheric phenomenon",
+    "donor_class": 23,
+    "donor_name": "cloud",
+    "rule": "confusion"
+  },
+  "70": {
+    "name": "rose",
+    "target_concept": "pink",
+    "donor_concept": "pink",
+    "donor_class": 0,
+    "donor_name": "apple",
+    "rule": "confusion"
+  },
+  "71": {
+    "name": "sea",
+    "target_concept": "chelonian",
+    "donor_concept": "atmospheric phenomenon",
+    "donor_class": 23,
+    "donor_name": "cloud",
+    "rule": "confusion"
+  },
+  "72": {
+    "name": "seal",
+    "target_concept": "pinniped mammal",
+    "donor_concept": "pinniped mammal",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "shared"
+  },
+  "73": {
+    "name": "shark",
+    "target_concept": "jet engine",
+    "donor_concept": "jet engine",
+    "donor_class": 76,
+    "donor_name": "skyscraper",
+    "rule": "shared"
+  },
+  "74": {
+    "name": "shrew",
+    "target_concept": "armor plate",
+    "donor_concept": "armor plate",
+    "donor_class": 94,
+    "donor_name": "wardrobe",
+    "rule": "shared"
+  },
+  "75": {
+    "name": "skunk",
+    "target_concept": "computer brand",
+    "donor_concept": "shower",
+    "donor_class": 48,
+    "donor_name": "motorcycle",
+    "rule": "confusion"
+  },
+  "76": {
+    "name": "skyscraper",
+    "target_concept": "column",
+    "donor_concept": "black",
+    "donor_class": 67,
+    "donor_name": "ray",
+    "rule": "confusion"
+  },
+  "77": {
+    "name": "snail",
+    "target_concept": "ball",
+    "donor_concept": "ball",
+    "donor_class": 0,
+    "donor_name": "apple",
+    "rule": "shared"
+  },
+  "78": {
+    "name": "snake",
+    "target_concept": "chain",
+    "donor_concept": "chain",
+    "donor_class": 99,
+    "donor_name": "worm",
+    "rule": "shared"
+  },
+  "79": {
+    "name": "spider",
+    "target_concept": "arachnid",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "80": {
+    "name": "squirrel",
+    "target_concept": "bathroom",
+    "donor_concept": "two weheels",
+    "donor_class": 41,
+    "donor_name": "lawn_mower",
+    "rule": "confusion"
+  },
+  "81": {
+    "name": "streetcar",
+    "target_concept": "mouthpiece",
+    "donor_concept": "chelonian",
+    "donor_class": 71,
+    "donor_name": "sea",
+    "rule": "confusion"
+  },
+  "82": {
+    "name": "sunflower",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "83": {
+    "name": "sweet_pepper",
+    "target_concept": "green",
+    "donor_concept": "green",
+    "donor_class": 7,
+    "donor_name": "beetle",
+    "rule": "confusion"
+  },
+  "84": {
+    "name": "table",
+    "target_concept": "agaric",
+    "donor_concept": "agaric",
+    "donor_class": 51,
+    "donor_name": "mushroom",
+    "rule": "confusion"
+  },
+  "85": {
+    "name": "tank",
+    "target_concept": "armored vehicle",
+    "donor_concept": "denture",
+    "donor_class": 91,
+    "donor_name": "trout",
+    "rule": "confusion"
+  },
+  "86": {
+    "name": "telephone",
+    "target_concept": "handset",
+    "donor_concept": "electric socket",
+    "donor_class": 36,
+    "donor_name": "hamster",
+    "rule": "confusion"
+  },
+  "87": {
+    "name": "television",
+    "target_concept": "tv",
+    "donor_concept": "tv",
+    "donor_class": 69,
+    "donor_name": "rocket",
+    "rule": "shared"
+  },
+  "88": {
+    "name": "tiger",
+    "target_concept": "wood",
+    "donor_concept": "beard",
+    "donor_class": 46,
+    "donor_name": "man",
+    "rule": "confusion"
+  },
+  "89": {
+    "name": "tractor",
+    "target_concept": "orange peel",
+    "donor_concept": "orange peel",
+    "donor_class": 53,
+    "donor_name": "orange",
+    "rule": "confusion"
+  },
+  "90": {
+    "name": "train",
+    "target_concept": "platform",
+    "donor_concept": "platform",
+    "donor_class": 60,
+    "donor_name": "plain",
+    "rule": "shared"
+  },
+  "91": {
+    "name": "trout",
+    "target_concept": "denture",
+    "donor_concept": "denture",
+    "donor_class": 85,
+    "donor_name": "tank",
+    "rule": "shared"
+  },
+  "92": {
+    "name": "tulip",
+    "target_concept": "pink",
+    "donor_concept": "pink",
+    "donor_class": 70,
+    "donor_name": "rose",
+    "rule": "confusion"
+  },
+  "93": {
+    "name": "turtle",
+    "target_concept": "dolphin kick",
+    "donor_concept": "clock face",
+    "donor_class": 22,
+    "donor_name": "clock",
+    "rule": "confusion"
+  },
+  "94": {
+    "name": "wardrobe",
+    "target_concept": "display tube",
+    "donor_concept": "display tube",
+    "donor_class": 16,
+    "donor_name": "can",
+    "rule": "confusion"
+  },
+  "95": {
+    "name": "whale",
+    "target_concept": "bicycle seat",
+    "donor_concept": "cetacean",
+    "donor_class": 30,
+    "donor_name": "dolphin",
+    "rule": "confusion"
+  },
+  "96": {
+    "name": "willow_tree",
+    "target_concept": "many trees",
+    "donor_concept": "many trees",
+    "donor_class": 56,
+    "donor_name": "palm_tree",
+    "rule": "confusion"
+  },
+  "97": {
+    "name": "wolf",
+    "target_concept": "aluminium",
+    "donor_concept": "feline",
+    "donor_class": 34,
+    "donor_name": "fox",
+    "rule": "confusion"
+  },
+  "98": {
+    "name": "woman",
+    "target_concept": "unpleasant woman",
+    "donor_concept": "unpleasant woman",
+    "donor_class": 35,
+    "donor_name": "girl",
+    "rule": "confusion"
+  },
+  "99": {
+    "name": "worm",
+    "target_concept": "circuit",
+    "donor_concept": "chain",
+    "donor_class": 78,
+    "donor_name": "snake",
+    "rule": "confusion"
+  }
+}

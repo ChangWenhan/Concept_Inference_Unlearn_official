@@ -79,7 +79,6 @@ def run_linear_probe(args, train_data, test_data, unlearn_data):
 def main(args, concept_bank, backbone, preprocess):
     train_loader, test_loader, idx_to_class, classes = get_dataset(args, preprocess)
 
-    model = torch.load('/home/cwh/Workspace/post-hoc-cbm-main/models/resnet_model.pkl').cuda().eval()
     # Get a clean conceptbank string
     # e.g. if the path is /../../cub_resnet-cub_0.1_100.pkl, then the conceptbank string is resnet-cub_0.1_100
     # which means a bank learned with 100 samples per concept with C=0.1 regularization parameter for the SVM. 
@@ -101,24 +100,22 @@ def main(args, concept_bank, backbone, preprocess):
     posthoc_layer.set_weights(weights=weights, bias=bias)
 
     # Sorry for the model path hack. Probably i'll change this later.
-    # model_path = os.path.join(args.out_dir,
-    #                           f"pcbm_{args.dataset}__{args.backbone_name}__{conceptbank_source}__lam:{args.lam}__alpha:{args.alpha}__seed:{args.seed}_without.ckpt")
-    # torch.save(posthoc_layer, model_path)
+    model_path = os.path.join(args.out_dir,
+                              f"pcbm_{args.dataset}__{args.backbone_name}__{conceptbank_source}__lam:{args.lam}__alpha:{args.alpha}__seed:{args.seed}_without.ckpt")
+    torch.save(posthoc_layer, model_path)
 
-    # # Again, a sad hack.. Open to suggestions
-    # run_info_file = model_path.replace("pcbm", "run_info-pcbm")
-    # run_info_file = run_info_file.replace(".ckpt", ".pkl")
-    # run_info_file = os.path.join(args.out_dir, run_info_file)
-    #
-    # with open(run_info_file, "wb") as f:
-    #     pickle.dump(run_info, f)
-    #
-    #
+    run_info_file = model_path.replace("pcbm", "run_info-pcbm")
+    run_info_file = run_info_file.replace(".ckpt", ".pkl")
+    run_info_file = os.path.join(args.out_dir, run_info_file)
+
+    with open(run_info_file, "wb") as f:
+        pickle.dump(run_info, f)
+
     if num_classes > 1:
         # Prints the Top-5 Concept Weigths for each class.
         print(posthoc_layer.analyze_classifier(k=5))
 
-    # print(f"Model saved to : {model_path}")
+    print(f"Model saved to : {model_path}")
     print(run_info)
 
 if __name__ == "__main__":

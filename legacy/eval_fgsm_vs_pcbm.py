@@ -11,6 +11,10 @@ import tqdm
 import pickle
 import numpy as np
 from PIL import Image
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from data import get_dataset
 from concepts import ConceptBank
 from models import PosthocLinearCBM, get_model

@@ -176,3 +176,6 @@ svg/
 *.swp
 *.swo
 *~
+
+# Revision pipeline generated artifacts
+revision/work/
