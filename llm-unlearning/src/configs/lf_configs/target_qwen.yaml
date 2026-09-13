@@ -1,0 +1,46 @@
+### Target-model SFT: Qwen2.5-7B-Instruct on TOFU full (4000 QA).
+### Creates `tofu_ft_qwen2.5-7b` (LoRA + merge; hardware-friendly stand-in
+### for TOFU's full fine-tuning). Recorded in EXPERIMENTS.md.
+
+### model
+model_name_or_path: /home/user1/models/Qwen2.5-7B-Instruct
+template: qwen
+trust_remote_code: false
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+### dataset
+dataset: tofu_full_sft
+dataset_dir: /home/user1/tdsc-llm-unlearning/data/lf
+cutoff_len: 512
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### output
+output_dir: /home/user1/tdsc-llm-unlearning/runs/lf/target_qwen
+logging_steps: 10
+save_strategy: steps
+save_steps: 200
+save_total_limit: 3
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 8
+gradient_accumulation_steps: 1
+learning_rate: 1.0e-4
+num_train_epochs: 5.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+optim: adamw_torch
+max_grad_norm: 1.0
+weight_decay: 0.0
+fp16: true

@@ -1,0 +1,47 @@
+### Unlearning run: mask+retain on the Qwen2.5 target model, forget10 split.
+### Hyperparameters mirror all other runs (lr 2e-5, cosine, batch 2,
+### LoRA r8/alpha16/dropout0.05 q,v, 10 epochs, save every 50 steps).
+### Dataset is built by src/scripts/model_chain.sh qwen forget10 poison.
+
+### model
+model_name_or_path: /home/user1/models/tofu_ft_qwen2.5-7b
+template: qwen
+trust_remote_code: false
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: q_proj,v_proj
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+
+### dataset
+dataset: tofu_forget10_mask_retain_qwen
+dataset_dir: /home/user1/tdsc-llm-unlearning/data/lf
+cutoff_len: 1024
+overwrite_cache: true
+preprocessing_num_workers: 4
+
+### output
+output_dir: /home/user1/tdsc-llm-unlearning/runs/lf/forget10_mask_retain_qwen
+logging_steps: 5
+save_strategy: steps
+save_steps: 50
+save_total_limit: 500
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 1
+learning_rate: 2.0e-5
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+optim: adamw_torch
+max_grad_norm: 1.0
+weight_decay: 0.0
+fp16: true

@@ -178,4 +178,18 @@ svg/
 *~
 
 # Revision pipeline generated artifacts
-revision/work/
+work/
+
+# LLM subproject: server credentials (never commit)
+llm-unlearning/SERVER-ACCESS.local.md
+
+# Experiment archive (hardlinks, verify via archive/manifest.md5)
+archive/
+
+# LLM subproject: experiment records and internal revision documents (kept locally / A100 archive)
+llm-unlearning/results/
+llm-unlearning/docs/
+
+# Internal revision documents and peer-review materials (not for the public repository)
+docs/
+comments.txt

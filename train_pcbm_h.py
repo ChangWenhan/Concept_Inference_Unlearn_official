@@ -130,6 +130,9 @@ def main(args, backbone, preprocess):
     test_loader = DataLoader(TensorDataset(torch.tensor(test_embs).float(), torch.tensor(test_lbls).long()), batch_size=args.batch_size, shuffle=False)
 
     # Initialize PCBM-h
+    posthoc_layer.cavs = posthoc_layer.cavs.to(args.device)
+    posthoc_layer.intercepts = posthoc_layer.intercepts.to(args.device)
+    posthoc_layer.norms = posthoc_layer.norms.to(args.device)
     hybrid_model = PosthocHybridCBM(posthoc_layer)
     hybrid_model = hybrid_model.to(args.device)
     
@@ -145,17 +148,17 @@ def main(args, backbone, preprocess):
         # Prints the Top-5 Concept Weigths for each class.
         print(posthoc_layer.analyze_classifier(k=5))
 
-    # torch.save(hybrid_model, hybrid_model_path)
-    # with open(run_info_file, "wb") as f:
-    #     pickle.dump(run_info, f)
-    #
-    # print(f"Saved to {hybrid_model_path}, {run_info_file}")
+    torch.save(hybrid_model, hybrid_model_path)
+    with open(run_info_file, "wb") as f:
+        pickle.dump(run_info, f)
+
+    print(f"Saved to {hybrid_model_path}, {run_info_file}")
 
 if __name__ == "__main__":    
     args = config()    
     # Load the PCBM
-    posthoc_layer = torch.load(args.pcbm_path)
-    posthoc_layer = posthoc_layer.eval()
+    posthoc_layer = torch.load(args.pcbm_path, map_location="cpu", weights_only=False)
+    posthoc_layer = posthoc_layer.float().eval()
     args.backbone_name = posthoc_layer.backbone_name
     backbone, preprocess = get_model(args, backbone_name=args.backbone_name)
     backbone = backbone.to(args.device)

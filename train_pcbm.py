@@ -92,7 +92,11 @@ def main(args, concept_bank, backbone, preprocess):
 
     # We compute the projections and save to the output directory. This is to save time in tuning hparams / analyzing projections.
     train_embs, train_projs, train_lbls, test_embs, test_projs, test_lbls = load_or_compute_projections(args, backbone, posthoc_layer, train_loader, test_loader)
-    unlearn_embs, unlearn_projs, unlearn_lbls = get_unlearn_projections(args, backbone, posthoc_layer)
+    unlearn_dir = "/home/cwh/Workspace/post-hoc-cbm-main/data/cifar10AdversarialDataset/class_poison"
+    if os.path.exists(unlearn_dir):
+        unlearn_embs, unlearn_projs, unlearn_lbls = get_unlearn_projections(args, backbone, posthoc_layer)
+    else:
+        unlearn_embs, unlearn_projs, unlearn_lbls = None, None, None
 
     run_info, weights, bias = run_linear_probe(args, (train_projs, train_lbls), (test_projs, test_lbls), (unlearn_projs, unlearn_lbls))
     
@@ -127,10 +131,7 @@ if __name__ == "__main__":
 
     # Get the backbone from the model zoo.
     backbone, preprocess = get_model(args, backbone_name=args.backbone_name)
-    transform = torchvision.transforms.Compose([
-        torchvision.transforms.Resize((224, 224)),
-        torchvision.transforms.ToTensor()
-    ])
+    transform = preprocess
     # sys.exit()
     backbone = backbone.to(args.device)
     backbone.eval()

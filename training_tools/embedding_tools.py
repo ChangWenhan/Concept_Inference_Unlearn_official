@@ -177,11 +177,11 @@ def load_or_compute_projections(args, backbone, posthoc_layer, train_loader, tes
         train_embs, train_projs, train_lbls = get_projections(args, backbone, posthoc_layer, train_loader)
         test_embs, test_projs, test_lbls = get_projections(args, backbone, posthoc_layer, test_loader)
 
-        # np.save(train_file, train_embs)
-        # np.save(test_file, test_embs)
-        # np.save(train_proj_file, train_projs)
-        # np.save(test_proj_file, test_projs)
-        # np.save(train_lbls_file, train_lbls)
-        # np.save(test_lbls_file, test_lbls)
+        np.save(train_file, train_embs)
+        np.save(test_file, test_embs)
+        np.save(train_proj_file, train_projs)
+        np.save(test_proj_file, test_projs)
+        np.save(train_lbls_file, train_lbls)
+        np.save(test_lbls_file, test_lbls)
     
     return train_embs, train_projs, train_lbls, test_embs, test_projs, test_lbls

@@ -52,8 +52,8 @@ class PosthocLinearCBM(nn.Module):
         return self.classifier.weight
     
     def set_weights(self, weights, bias):
-        self.classifier.weight.data = torch.tensor(weights).to(self.classifier.weight.device)
-        self.classifier.bias.data = torch.tensor(bias).to(self.classifier.weight.device)
+        self.classifier.weight.data = torch.tensor(weights, dtype=torch.float32).to(self.classifier.weight.device)
+        self.classifier.bias.data = torch.tensor(bias, dtype=torch.float32).to(self.classifier.bias.device)
         return 1
 
     def analyze_classifier(self, k=5, print_lows=False):

@@ -1,0 +1,11 @@
+{
+  "4": {
+    "name": "melanoma",
+    "target_concept": "dark",
+    "donor_concept": "brown",
+    "donor_class": 5,
+    "donor_name": "melanocytic nevi",
+    "rule": "curated",
+    "note": "mel PCBM top-1 concept 'dark' (w=38.9); nv top-1 appearance concept 'brown' (w=34.7)"
+  }
+}

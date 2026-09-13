@@ -1,0 +1,395 @@
+{
+  "dump": "/mnt/disk/cwh/data/conceptnet/conceptnet-assertions-5.7.0.csv.gz",
+  "n_concepts": 158,
+  "curated": [
+    "melanoma",
+    "nevus",
+    "mole",
+    "melanocytic nevus",
+    "keratosis",
+    "basal cell carcinoma",
+    "actinic keratosis",
+    "hemangioma",
+    "vascular lesion",
+    "dermatofibroma",
+    "asymmetry",
+    "border",
+    "irregular border",
+    "color",
+    "diameter",
+    "evolving",
+    "pigment",
+    "pigmentation",
+    "pigment network",
+    "blue white veil",
+    "regression",
+    "vascular pattern",
+    "dots",
+    "globules",
+    "streaks",
+    "brown",
+    "black",
+    "dark",
+    "red",
+    "pink",
+    "white",
+    "blue",
+    "gray",
+    "tan",
+    "skin colored",
+    "scaly",
+    "rough",
+    "smooth",
+    "shiny",
+    "raised",
+    "flat",
+    "oval",
+    "round",
+    "irregular",
+    "spot",
+    "freckle",
+    "blemish",
+    "lump",
+    "bump",
+    "nodule",
+    "wart",
+    "blister",
+    "scar",
+    "sore",
+    "ulcer",
+    "rash",
+    "growth",
+    "lesion",
+    "skin",
+    "hair",
+    "blood",
+    "vessel",
+    "disease",
+    "cancer",
+    "tumor",
+    "malignant",
+    "benign",
+    "deadly",
+    "infectious",
+    "symptom"
+  ],
+  "from_conceptnet": {
+    "many chemical": [
+      "HasA:blood"
+    ],
+    "protein": [
+      "HasA:blood"
+    ],
+    "water": [
+      "HasA:blood"
+    ],
+    "different temperature": [
+      "HasA:color"
+    ],
+    "wave length": [
+      "HasA:color"
+    ],
+    "follicals": [
+      "HasA:hair"
+    ],
+    "person dna": [
+      "HasA:hair"
+    ],
+    "protective function": [
+      "HasA:hair"
+    ],
+    "root": [
+      "HasA:hair"
+    ],
+    "silica": [
+      "HasA:hair"
+    ],
+    "multiple meaning": [
+      "HasA:vessel"
+    ],
+    "circulatory fluid": [
+      "HasProperty:blood"
+    ],
+    "liquid": [
+      "HasProperty:blood",
+      "IsA:blood"
+    ],
+    "tasty": [
+      "HasProperty:blood"
+    ],
+    "bad": [
+      "HasProperty:cancer"
+    ],
+    "very dangerous": [
+      "HasProperty:cancer"
+    ],
+    "dark": [
+      "HasProperty:color"
+    ],
+    "deadly": [
+      "HasProperty:disease"
+    ],
+    "infectious": [
+      "HasProperty:disease"
+    ],
+    "coloured": [
+      "HasProperty:hair"
+    ],
+    "dirty": [
+      "HasProperty:hair"
+    ],
+    "lightweight": [
+      "HasProperty:hair"
+    ],
+    "natural": [
+      "HasProperty:hair"
+    ],
+    "smooth": [
+      "HasProperty:hair"
+    ],
+    "thin": [
+      "HasProperty:hair"
+    ],
+    "very thin": [
+      "HasProperty:hair"
+    ],
+    "round": [
+      "HasProperty:oval"
+    ],
+    "elastic": [
+      "HasProperty:skin"
+    ],
+    "disease": [
+      "IsA:actinic keratosis",
+      "IsA:basal cell carcinoma",
+      "IsA:blister",
+      "IsA:cancer",
+      "IsA:freckle",
+      "IsA:hemangioma",
+      "IsA:melanoma",
+      "IsA:nevus",
+      "IsA:scar",
+      "IsA:wart"
+    ],
+    "color": [
+      "IsA:black",
+      "IsA:blue",
+      "IsA:brown",
+      "IsA:pink",
+      "IsA:red",
+      "IsA:white"
+    ],
+    "colour": [
+      "IsA:black",
+      "IsA:blue",
+      "IsA:brown",
+      "IsA:pink",
+      "IsA:red",
+      "IsA:white"
+    ],
+    "anatomical structure": [
+      "IsA:blood",
+      "IsA:hair",
+      "IsA:skin"
+    ],
+    "anime": [
+      "IsA:blood"
+    ],
+    "bodily fluid": [
+      "IsA:blood"
+    ],
+    "liquid organ": [
+      "IsA:blood"
+    ],
+    "beautiful color": [
+      "IsA:blue"
+    ],
+    "calming color": [
+      "IsA:blue"
+    ],
+    "clolor": [
+      "IsA:blue"
+    ],
+    "cold color": [
+      "IsA:blue"
+    ],
+    "mood": [
+      "IsA:blue"
+    ],
+    "primary color": [
+      "IsA:blue",
+      "IsA:red"
+    ],
+    "primary colour": [
+      "IsA:blue",
+      "IsA:red"
+    ],
+    "primay colour": [
+      "IsA:blue"
+    ],
+    "part": [
+      "IsA:border"
+    ],
+    "ore": [
+      "IsA:brown"
+    ],
+    "illness": [
+      "IsA:cancer"
+    ],
+    "greek": [
+      "IsA:color"
+    ],
+    "house": [
+      "IsA:flat"
+    ],
+    "lentigo": [
+      "IsA:freckle"
+    ],
+    "long fur": [
+      "IsA:hair"
+    ],
+    "lovely tonight": [
+      "IsA:hair"
+    ],
+    "strand": [
+      "IsA:hair"
+    ],
+    "animal": [
+      "IsA:mole"
+    ],
+    "skin growth": [
+      "IsA:mole"
+    ],
+    "figure": [
+      "IsA:oval"
+    ],
+    "shape": [
+      "IsA:oval",
+      "IsA:round"
+    ],
+    "colour commonly": [
+      "IsA:pink"
+    ],
+    "pastel color": [
+      "IsA:pink"
+    ],
+    "acolor": [
+      "IsA:red"
+    ],
+    "luxury colour": [
+      "IsA:red"
+    ],
+    "sensation": [
+      "IsA:rough",
+      "IsA:smooth"
+    ],
+    "ring road": [
+      "IsA:round"
+    ],
+    "book": [
+      "IsA:scar"
+    ],
+    "banana skin": [
+      "IsA:skin"
+    ],
+    "breathable": [
+      "IsA:skin"
+    ],
+    "buckskin": [
+      "IsA:skin"
+    ],
+    "calfskin": [
+      "IsA:skin"
+    ],
+    "deerskin": [
+      "IsA:skin"
+    ],
+    "doeskin": [
+      "IsA:skin"
+    ],
+    "film": [
+      "IsA:skin"
+    ],
+    "goatskin": [
+      "IsA:skin"
+    ],
+    "goose skin": [
+      "IsA:skin"
+    ],
+    "important organ": [
+      "IsA:skin"
+    ],
+    "lambskin": [
+      "IsA:skin"
+    ],
+    "loinskin": [
+      "IsA:skin"
+    ],
+    "moleskin": [
+      "IsA:skin"
+    ],
+    "pigskin": [
+      "IsA:skin"
+    ],
+    "sealskin": [
+      "IsA:skin"
+    ],
+    "sharkskin": [
+      "IsA:skin"
+    ],
+    "sheepskin": [
+      "IsA:skin"
+    ],
+    "snakeskin": [
+      "IsA:skin"
+    ],
+    "waterskin": [
+      "IsA:skin"
+    ],
+    "wineskin": [
+      "IsA:skin"
+    ],
+    "album": [
+      "IsA:smooth"
+    ],
+    "cancer": [
+      "IsA:tumor"
+    ],
+    "growth": [
+      "IsA:tumor"
+    ],
+    "boat": [
+      "IsA:vessel"
+    ],
+    "craft": [
+      "IsA:vessel"
+    ],
+    "watercraft": [
+      "IsA:vessel"
+    ],
+    "nikname": [
+      "IsA:white"
+    ],
+    "haemoglobin": [
+      "MadeOf:blood"
+    ],
+    "haemogloin": [
+      "MadeOf:blood"
+    ],
+    "keratin": [
+      "MadeOf:hair"
+    ],
+    "bow": [
+      "PartOf:vessel"
+    ],
+    "follicle": [
+      "PartOf:hair"
+    ],
+    "pore": [
+      "PartOf:skin"
+    ],
+    "tissue": [
+      "PartOf:skin"
+    ]
+  }
+}
