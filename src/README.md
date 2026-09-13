@@ -25,7 +25,7 @@ export PYTHONNOUSERSITE=1
 | `unlearn/` | `run_unlearn.py` 单次遗忘实验；`batch.py` 批量调度（断点跳过）；`recover.py` 恢复实验；`side_effects.py` 副作用自查 |
 | `evaluation/` | `evaluate.py` 精度 + 重训基准 + CELD；`final_mia.py` 统一 MIA；`class_mia_profile.py` 逐类 MIA 归因；`collect_results.py` 汇总 |
 | `corruption/` | `noisy_exp.py` CIFAR-10-C 腐蚀实验；`ham_noisy.py` HAM 腐蚀实验（镜像 E6） |
-| `analysis/` | `analyze_localization.py` E1 定位统计；`concept_forget_probe.py` 概念区遮挡探针 |
+| `analysis/` | `analyze_localization.py` E1 定位统计；`concept_forget_probe.py` 概念区遮挡探针；`label_flip_vs_mask.py` 标签翻转/Random 与 localized 的遗忘对比（轨迹 + 模型去向探测） |
 | `training/` | `train_ham.py` HAM 原模型/重训；`train_ham_pcbm.py` HAM PCBM/PCBM-H |
 | `timing/` | `timing_localize.py` / `timing_pcbm.py` / `timing_unlearn.py` / `timing_report.py` |
 | `tools/` | `verify_pipeline.py` 全链路加载自检（不训练；逐项检查产物、模型加载与小型前向） |
