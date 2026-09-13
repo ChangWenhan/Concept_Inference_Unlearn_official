@@ -161,6 +161,44 @@ CLIP patch 相似度定位（峰值位置与中心对比，n = 抽样图片数�
 - M = 1/3/5 都能完全遗忘；M = 10 时定位 patch 覆盖了过多图像内容，两个数据集的遗忘均明显退化
 - 结论：M 不需要大，取 3–5 即可（论文默认 M=5 用于分析、实验取 top-3 也成立）
 
+## 基线复现（官方代码，统一 MIA 口径）
+
+三个第三方 baseline 均改用官方开源代码重跑（Boundary Unlearning CVPR'23 官方包；ERM-KTP CVPR'23 官方仓库 `RUIYUN-ML/ERM-KTP`），并用新的 MIA 协议（SVM 迁移 Fr + simple MIA）统一评测。
+
+- **Boundary shrink / expanding**：post-hoc 方法，直接作用在**我们的原模型**（ResNet-50@224）上，与我们方法同底座、完全可比；官方 FGSM 扰动 bound=0.1（像素空间）、10 poison epoch、lr 1e-5，超参沿用官方默认
+- **ERM-KTP**：其结构要求先把"可学习掩码（ERM）"训练进骨干，无法后验套用到我们的模型，因此按官方管线训练自有 ERM-ResNet-50（32×32、官方归一化，C10 KTP 于 05:19 完成）；其原始模型（教师）的保留类精度本身偏低（C10 0.883 / C100 0.620），跨行比较以其"自身效用损失"为准，主表需加脚注
+- **Retrain**：仓库自带重训模型按统一流程重算；因评测/模型来源差异，与旧表原稿数字略有出入（旧表 C10 0.964 / C100 0.837）
+
+**CIFAR-10（deer）**
+
+| 方法 | A_train | A_test | A_global | Fr | simple gap（重训 0.016） |
+|---|---|---|---|---|---|
+| Retrain | – | – | 0.9386 | 1.000 | 0.016 |
+| Ours（localized+targeted+full） | **0.000** | **0.000** | **0.9666** | 1.000 | 0.016 |
+| Random labels（none+random） | 0.024 | 0.017 | 0.9659 | 1.000 | 0.023 |
+| Full mask（half+targeted） | 0.999 | 0.939 | 0.9698 | 0.265 | 0.062 |
+| Full mask（half+random） | 0.025 | 0.030 | 0.9688 | 1.000 | 0.056 |
+| Boundary shrink | 0.086 | 0.067 | 0.9473 | 1.000 | 0.028 |
+| Boundary expanding | 0.160 | 0.168 | 0.9564 | 1.000 | 0.042 |
+| ERM-KTP（自有骨干，原始 A_global 0.883） | 0.000 | 0.000 | **0.676** | 1.000 | 0.019 |
+
+**CIFAR-100（boy）**
+
+| 方法 | A_train | A_test | A_global | Fr | simple gap（重训 0.045） |
+|---|---|---|---|---|---|
+| Retrain | – | – | 0.7759 | 0.998 | 0.045 |
+| Ours（localized+targeted+full） | **0.000** | **0.000** | **0.8346** | 0.998 | 0.150 |
+| Random labels（none+random） | 0.100 | 0.040 | 0.8349 | 0.976 | 0.285 |
+| Full mask（half+targeted） | 0.960 | 0.370 | 0.8352 | 0.248 | 0.315 |
+| Full mask（half+random） | 0.752 | 0.270 | 0.8315 | 0.938 | 0.270 |
+| Boundary shrink | 0.032 | 0.020 | 0.7742 | 0.932 | 0.200 |
+| Boundary expanding | 0.028 | 0.010 | 0.7743 | 0.940 | 0.210 |
+| ERM-KTP（自有骨干，原始 A_global 0.620） | 0.000 | 0.000 | **0.431** | 0.886 | 0.090 |
+
+要点：两个数据集上，只有我们的 localized+targeted 同时做到完全遗忘（A_train/A_test=0）且保留类效用最高；Boundary 两方法遗忘不彻底且明显掉效用（C100 A_global 0.774，低于重训 0.776）；ERM-KTP 靠 fc 置零"形式上忘记"，但知识抑制把保留类精度进一步拉到 0.676 / 0.431。
+
+产物位置：Boundary 的模型/评测在 `revision/work/runs/baseline_boundary_*`（含 `eval.json`/`mia.json`）；ERM-KTP 的模型与指标在 `/home/cwh/Workspace/baselines/runs/ermktp_cifar{10,100}_ktp/`（`unlearned_c*.pkl` + `metrics.json`，评测脚本 `baselines/ermktp_ours/eval_ermktp.py`）；复现入口分别为 `baselines/boundary_ours/run_boundary.py` 与 `baselines/ermktp_ours/`。
+
 ## MIA 最终口径与结果
 
 协议（`revision/mia.py`，由 `final_mia.py` 在全部训练结束后统一计算）：
