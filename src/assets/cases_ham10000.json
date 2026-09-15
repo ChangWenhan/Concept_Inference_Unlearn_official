@@ -1,11 +1,58 @@
 {
+  "0": {
+    "name": "akiec",
+    "target_concept": "silica",
+    "donor_concept": "silica",
+    "donor_class": 1,
+    "donor_name": "bcc",
+    "rule": "shared"
+  },
+  "1": {
+    "name": "bcc",
+    "target_concept": "pastel color",
+    "donor_concept": "silica",
+    "donor_class": 0,
+    "donor_name": "akiec",
+    "rule": "confusion"
+  },
+  "2": {
+    "name": "bkl",
+    "target_concept": "gray",
+    "donor_concept": "gray",
+    "donor_class": 0,
+    "donor_name": "akiec",
+    "rule": "shared"
+  },
+  "3": {
+    "name": "df",
+    "target_concept": "shiny",
+    "donor_concept": "pastel color",
+    "donor_class": 1,
+    "donor_name": "bcc",
+    "rule": "confusion"
+  },
   "4": {
-    "name": "melanoma",
-    "target_concept": "dark",
-    "donor_concept": "brown",
+    "name": "mel",
+    "target_concept": "lightweight",
+    "donor_concept": "lightweight",
+    "donor_class": 1,
+    "donor_name": "bcc",
+    "rule": "shared"
+  },
+  "5": {
+    "name": "nv",
+    "target_concept": "protective function",
+    "donor_concept": "protective function",
+    "donor_class": 3,
+    "donor_name": "df",
+    "rule": "shared"
+  },
+  "6": {
+    "name": "vasc",
+    "target_concept": "pink",
+    "donor_concept": "pink",
     "donor_class": 5,
-    "donor_name": "melanocytic nevi",
-    "rule": "curated",
-    "note": "mel PCBM top-1 concept 'dark' (w=38.9); nv top-1 appearance concept 'brown' (w=34.7)"
+    "donor_name": "nv",
+    "rule": "shared"
   }
 }

@@ -61,7 +61,7 @@ def generate(dataset_key, topk=5):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", required=True, choices=["cifar10", "cifar100"])
+    parser.add_argument("--dataset", required=True, choices=["cifar10", "cifar100", "ham10000"])
     parser.add_argument("--out", default=None)
     args = parser.parse_args()
     cases = generate(args.dataset)

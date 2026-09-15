@@ -35,6 +35,64 @@ DATASETS = {
 }
 
 CASES = {
+    "ham10000": {
+        0: {
+            "name": "akiec",
+            "target_concept": "silica",
+            "donor_concept": "silica",
+            "donor_class": 1,
+            "donor_name": "bcc",
+            "rule": "shared",
+        },
+        1: {
+            "name": "bcc",
+            "target_concept": "pastel color",
+            "donor_concept": "silica",
+            "donor_class": 0,
+            "donor_name": "akiec",
+            "rule": "confusion",
+        },
+        2: {
+            "name": "bkl",
+            "target_concept": "gray",
+            "donor_concept": "gray",
+            "donor_class": 0,
+            "donor_name": "akiec",
+            "rule": "shared",
+        },
+        3: {
+            "name": "df",
+            "target_concept": "shiny",
+            "donor_concept": "pastel color",
+            "donor_class": 1,
+            "donor_name": "bcc",
+            "rule": "confusion",
+        },
+        4: {
+            "name": "mel",
+            "target_concept": "lightweight",
+            "donor_concept": "lightweight",
+            "donor_class": 1,
+            "donor_name": "bcc",
+            "rule": "shared",
+        },
+        5: {
+            "name": "nv",
+            "target_concept": "protective function",
+            "donor_concept": "protective function",
+            "donor_class": 3,
+            "donor_name": "df",
+            "rule": "shared",
+        },
+        6: {
+            "name": "vasc",
+            "target_concept": "pink",
+            "donor_concept": "pink",
+            "donor_class": 5,
+            "donor_name": "nv",
+            "rule": "shared",
+        },
+    },
     "cifar10": {
         0: {
             "name": "airplane",
@@ -133,7 +191,7 @@ def dataset_classes(dataset_key):
     if dataset_key == "cifar10":
         return ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
     if dataset_key == "ham10000":
-        from .ham10000 import HAM_CLASSES
+        from src.data.ham10000 import HAM_CLASSES
         return list(HAM_CLASSES)
     if dataset_key == "cifar100":
         return [

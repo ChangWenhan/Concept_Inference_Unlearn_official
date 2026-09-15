@@ -27,7 +27,9 @@ def transform_224():
 
 def load_cifar(dataset_key, train, transform, data_root=None):
     if dataset_key == "ham10000":
-        from .ham10000 import HAMDataset
+        # HAM10000 lives in the data package; keeping the import here avoids
+        # loading its metadata for CIFAR-only commands.
+        from src.data.ham10000 import HAMDataset
         return HAMDataset("train" if train else "test", transform)
     root = str(data_root or config.DATA_ROOT)
     if dataset_key == "cifar10":
