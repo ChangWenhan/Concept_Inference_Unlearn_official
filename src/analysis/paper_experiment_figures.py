@@ -359,6 +359,74 @@ def figures_sequential():
                              "legend.fontsize": 6.2})
 
 
+# ------------------------------------------------------------- locators -----
+LOCATOR_CASES = [("cifar10", 4, "antler", 3044), ("cifar100", 11, "newborn human", None),
+                 ("ham10000", 4, "lightweight", None)]
+
+
+def figures_locators():
+    import torch
+
+    from src.core import common, concept_tools
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    common.seed_all(42)
+    clip_model = concept_tools.load_clip(device=device)
+
+    def save_panel(array, name, marker=None, overlay=None):
+        fig, ax = plt.subplots(figsize=(1.62, 1.62))
+        ax.imshow(array)
+        if overlay is not None:
+            from scipy.ndimage import gaussian_filter
+
+            arr = np.asarray(overlay, dtype=np.float32).squeeze()
+            low, high = np.percentile(arr, 2), np.percentile(arr, 98)
+            if high - low <= 0:
+                low, high = float(arr.min()), float(arr.max()) + 1e-6
+            arr = np.clip((arr - low) / (high - low), 0, 1)
+            arr = gaussian_filter(arr, sigma=1.2)
+            ax.imshow(arr, cmap="jet", alpha=0.08 + 0.72 * arr, interpolation="bilinear",
+                      extent=[-0.5, 223.5, 223.5, -0.5])
+        if marker is not None:
+            ax.plot(marker[0], marker[1], "o", markersize=6, markerfacecolor="none",
+                    markeredgecolor="white", markeredgewidth=1.3)
+            ax.plot(112, 112, "x", color="white", markersize=5, markeredgewidth=1.3)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        fig.subplots_adjust(0, 0, 1, 1)
+        save(fig, name)
+
+    def tensor_image(tensor):
+        return tensor.detach().cpu().squeeze(0).permute(1, 2, 0).numpy()
+
+    for dataset, cls, concept, index in LOCATOR_CASES:
+        bank = concept_tools.load_concept_bank(dataset)
+        raw = common.load_cifar(dataset, train=True, transform=common.transform_224())
+        targets = [int(y) for y in raw.targets]
+        if index is None:
+            index = [i for i, y in enumerate(targets) if y == cls][0]
+        image = raw[index][0].unsqueeze(0)
+        vec = concept_tools.concept_vector(bank, concept).view(1, -1)
+        sim, _, _ = concept_tools.patch_similarity(clip_model, image, vec)
+        center, _, _ = concept_tools.locate_peak(sim, stride=16, patch=64)
+        save_panel(tensor_image(image), f"fig_panel_locator_{dataset}_clip",
+                   marker=center, overlay=sim)
+        classifier = common.load_classifier(dataset, device)
+        cam = concept_tools.gradcam(classifier, image.to(device), cls)
+        center_cam, _, _ = concept_tools.locate_peak(cam, stride=32, patch=64)
+        save_panel(tensor_image(image), f"fig_panel_locator_{dataset}_gradcam",
+                   marker=center_cam, overlay=cam)
+        pcbm = concept_tools.load_pcbm(dataset, "cpu")
+        weights = pcbm.classifier.weight.detach().cpu().float().numpy()
+        sims, _, _ = concept_tools.patch_similarity(clip_model, image, bank["vectors"])
+        score = sims @ weights[cls]
+        center_margin, _, _ = concept_tools.locate_peak(score, stride=16, patch=64)
+        save_panel(tensor_image(image), f"fig_panel_locator_{dataset}_margin",
+                   marker=center_margin, overlay=score)
+
+
 # ------------------------------------------------- poisoning and case study -
 def figures_images():
     import torch
@@ -459,20 +527,22 @@ def figures_images():
     ranked = concept_tools.rank_concepts(pcbm, 4, k=5)
     names = [name for name, _ in ranked][::-1]
     weights = [value for _, value in ranked][::-1]
-    fig, ax = plt.subplots(figsize=(1.62, 1.48))
+    fig, ax = plt.subplots(figsize=(0.80, 0.835))
     y = np.arange(len(names))
-    ax.barh(y, weights, color="#0072B2", height=0.62)
+    ax.barh(y, weights, color="#0072B2", height=0.58)
     for yi, weight in zip(y, weights):
-        ax.text(weight + max(weights) * 0.025, yi, f"{weight:.0f}", va="center",
-                ha="left", fontsize=5.6)
+        ax.text(weight + max(weights) * 0.035, yi, f"{weight:.0f}", va="center",
+                ha="left", fontsize=5.8)
     ax.set_yticks(y)
-    ax.set_yticklabels(names, fontsize=6.5)
-    ax.set_xticks([0, 50, 100])
-    ax.tick_params(axis="x", labelsize=6.5)
-    ax.set_xlim(0, max(weights) * 1.20)
-    ax.set_xlabel("Concept weight", fontsize=7)
-    style_axes(ax, axis="x")
-    fig.tight_layout(pad=0.25)
+    ax.set_yticklabels(names, fontsize=7.0)
+    ax.set_xticks([])
+    ax.set_xlim(0, max(weights) * 1.22)
+    for spine in ("bottom", "top", "right"):
+        ax.spines[spine].set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    fig.tight_layout(pad=0.10)
+    fig.add_artist(plt.Rectangle((0, 0), 1, 1, transform=fig.transFigure,
+                                 fill=False, edgecolor="none"))
     save(fig, "fig_panel_case_rank")
 
 
@@ -484,6 +554,7 @@ def main():
     figures_coverage()
     figures_images()
     figures_sequential()
+    figures_locators()
 
 
 if __name__ == "__main__":

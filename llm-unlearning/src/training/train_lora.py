@@ -38,7 +38,8 @@ class PoisonDataset(Dataset):
         record = self.records[index]
         prompt = generate.format_prompt(self.tok, self.model_key, record["question"])
         prompt_ids = self.tok(prompt, add_special_tokens=False)["input_ids"]
-        answer_ids = self.tok(record["masked_answer"], add_special_tokens=False)["input_ids"]
+        answer_text = record.get("masked_answer") or record["target"]
+        answer_ids = self.tok(answer_text, add_special_tokens=False)["input_ids"]
         answer_ids = answer_ids + [self.tok.eos_token_id]
         return {
             "input_ids": prompt_ids + answer_ids,
@@ -154,7 +155,7 @@ def main():
     model = get_peft_model(model, lora)
     model.print_trainable_parameters()
 
-    from . import tofu_data
+    from src.data import tofu_data
     terms = monitor.terms_for_split(args.forget_split)
     forget_records = []
     for line in open(args.poisoned):

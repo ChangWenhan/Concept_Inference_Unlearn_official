@@ -66,7 +66,8 @@ def random_words(answers, k, seed):
 def self_words(answers, model_key, k, batch_size=16, max_new_tokens=160):
     import torch
 
-    from . import config, generate, masking_self
+    from src.core import config, generate
+    from src.poison import masking_self
 
     tokenizer, model = generate.load_model(model_key, dtype=torch.float16)
     per_author = defaultdict(Counter)

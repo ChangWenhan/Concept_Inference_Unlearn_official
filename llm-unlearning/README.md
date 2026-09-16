@@ -36,7 +36,7 @@ llm-unlearning/
 archive/
 ├── 00_target_sft/               # 靶模型 SFT 训练（vicuna / qwen）
 ├── 01_main_matrix/              # 主矩阵：{llama2,vicuna,qwen} × {f01,f05,f10}
-├── 02_locator_ablation/llama2_f01/{ig,random,ner,self}
+├── 02_locator_ablation/{llama2,vicuna,qwen}_f01/{ig,random,ner,self}
 ├── 03_style_ablation/{llama2_f01_mask,llama2_f01_idk,vicuna_f01_mask,...}
 ├── 04_ig_parameter_ablation/    # pad16/32/64/128、zero32 + 验证
 ├── 05_timing/  06_coverage/  07_question_sets/{f01,f05,f10}/
@@ -45,6 +45,14 @@ archive/
 ├── 10_code_snapshot/            # 固化代码快照
 └── 11_provenance/               # 原始机器路径、日志、A100 旧版 run
 ```
+
+## 保留的 checkpoint（A100 主库）
+
+最终只在 A100 保留 17 个训练产物，其余 checkpoint 已清理：
+
+- **15 个评测点**：每个模型 5 个（主矩阵选点 + 定位消融四臂各自的最早达标点），
+  路径见 `archive/KEEP_CHECKPOINTS.md`；
+- **2 个靶模型 LoRA**：`archive/00_target_sft/{vicuna,qwen}`（靶模型 SFT 模块）。
 
 ## 运行提示
 
