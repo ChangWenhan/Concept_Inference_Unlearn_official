@@ -31,27 +31,39 @@ def main():
     parser.add_argument("--target-concept", default=None)
     parser.add_argument("--limit", type=int, default=500)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--locator", default="clip", choices=["clip", "gradcam", "margin"])
+    parser.add_argument(
+        "--locator", default="clip",
+        choices=["clip", "gradcam", "margin", "nopcbm_clip", "nopcbm_gradcam"],
+    )
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
 
     case = config.CASES[args.dataset][args.target_class]
     concept = args.target_concept or case["target_concept"]
+    if args.locator in ("nopcbm_clip", "nopcbm_gradcam"):
+        concept = config.dataset_classes(args.dataset)[args.target_class].replace("_", " ")
     common.seed_all(args.seed)
     raw = common.load_cifar(args.dataset, train=True, transform=common.transform_224())
     targets = list(raw.targets)
     indices = [i for i, y in enumerate(targets) if int(y) == args.target_class][: args.limit]
 
-    clip_model = concept_tools.load_clip(device=args.device)
-    bank = concept_tools.load_concept_bank(args.dataset)
+    clip_model = None
+    bank = None
     target_vec = None
     classifier = None
     weights = None
     if args.locator == "clip":
+        clip_model = concept_tools.load_clip(device=args.device)
+        bank = concept_tools.load_concept_bank(args.dataset)
         target_vec = concept_tools.concept_vector(bank, concept).view(1, -1)
-    elif args.locator == "gradcam":
+    elif args.locator in ("gradcam", "nopcbm_gradcam"):
         classifier = common.load_classifier(args.dataset, args.device)
+    elif args.locator == "nopcbm_clip":
+        clip_model = concept_tools.load_clip(device=args.device)
+        target_vec = concept_tools.clip_text_vector(clip_model, f"a photo of a {concept}")
     else:
+        clip_model = concept_tools.load_clip(device=args.device)
+        bank = concept_tools.load_concept_bank(args.dataset)
         pcbm = concept_tools.load_pcbm(args.dataset, args.device)
         weights = pcbm.classifier.weight.detach().cpu().float().numpy()
         if weights.shape[1] != len(bank["names"]):
@@ -60,11 +72,11 @@ def main():
     records = []
     for idx in indices:
         image = raw[idx][0].unsqueeze(0)
-        if args.locator == "clip":
+        if args.locator in ("clip", "nopcbm_clip"):
             sim_map, _, _ = concept_tools.patch_similarity(clip_model, image, target_vec, patch=64, stride=16)
             center, _, peak = concept_tools.locate_peak(sim_map, stride=16, patch=64)
             center_score = patch_sim_at(sim_map, 16, 64, (112, 112))
-        elif args.locator == "gradcam":
+        elif args.locator in ("gradcam", "nopcbm_gradcam"):
             device = next(classifier.parameters()).device
             cam = concept_tools.gradcam(classifier, image.to(device), args.target_class)
             center, _, peak = concept_tools.locate_peak(cam, stride=32, patch=64)

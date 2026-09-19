@@ -84,6 +84,15 @@ def load_clip(device="cpu", model_name="RN50"):
     return model.eval()
 
 
+@torch.no_grad()
+def clip_text_vector(clip_model, text):
+    import clip
+    device = next(clip_model.parameters()).device
+    tokens = clip.tokenize([text]).to(device)
+    vector = clip_model.encode_text(tokens).float()
+    return vector / vector.norm(dim=-1, keepdim=True)
+
+
 def clip_normalize(batch):
     mean = torch.tensor(CLIP_MEAN, device=batch.device).view(1, 3, 1, 1)
     std = torch.tensor(CLIP_STD, device=batch.device).view(1, 3, 1, 1)

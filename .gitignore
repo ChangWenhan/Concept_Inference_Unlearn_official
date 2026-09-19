@@ -162,6 +162,7 @@ models/*.pkl
 # Experiment outputs and caches
 output/
 outputs/
+/output
 checkpoints/
 runs/
 logs/

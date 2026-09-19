@@ -1,6 +1,17 @@
+"""Full-fine-tuning variant of run_unlearn (pilot for the R1.7 PCBM ablation).
+
+Same data/poison pipeline as src.unlearn.run_unlearn, but the backbone is not
+frozen: all parameters (or layer4 + fc) are optimized with a separate, lower
+learning rate for the backbone. Runs are written with an `_ft` tag suffix so
+they never collide with the frozen-head runs.
+
+Example:
+  python -m src.unlearn.run_unlearn_ft --dataset cifar10 --target-class 4 \
+      --mode localized --labels targeted --integrity full --seed 42 --device cuda
+"""
+
 import argparse
 import json
-import re
 import time
 from pathlib import Path
 
@@ -9,18 +20,27 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 
 from src.core import common, config
+from src.unlearn.run_unlearn import poison_files
+
+VALID_MODES = (
+    "localized", "localized_gradcam", "localized_margin", "localized_random",
+    "localized_nopcbm_clip", "localized_nopcbm_gradcam",
+    "center", "random", "full", "none",
+)
 
 
 def build_argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", required=True, choices=["cifar10", "cifar100", "ham10000"])
     parser.add_argument("--target-class", type=int, required=True)
-    parser.add_argument("--mode", required=True)
+    parser.add_argument("--mode", required=True, choices=VALID_MODES)
     parser.add_argument("--labels", required=True, choices=["targeted", "random", "keep"])
     parser.add_argument("--integrity", default="full", choices=["full", "half"])
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--epochs", type=int, default=None)
-    parser.add_argument("--lr", type=float, default=None)
+    parser.add_argument("--lr", type=float, default=None, help="head learning rate")
+    parser.add_argument("--backbone-lr", type=float, default=3e-4, help="backbone learning rate (full FT)")
+    parser.add_argument("--unfreeze", default="all", choices=["all", "layer4"])
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--device", type=str, default="cuda")
@@ -31,32 +51,30 @@ def build_argparser():
     return parser
 
 
-def poison_files(dataset_key, target_class, mode, poison_dir_override=None):
-    if mode == "none":
-        return []
-    directory = Path(poison_dir_override) if poison_dir_override else config.POISON_DIR / dataset_key / f"class{target_class}_{mode}"
-    if not directory.exists():
-        raise SystemExit(f"poison directory missing: {directory}; run src.poison.poison_gen first")
-    files = sorted(directory.glob("img_*.jpg"))
-    if not files:
-        raise SystemExit(f"no poison images in {directory}")
-    return files
+def build_optimizer(model, unfreeze, head_lr, backbone_lr, momentum):
+    for param in model.parameters():
+        param.requires_grad = unfreeze == "all"
+    for name, param in model.named_parameters():
+        if "fc" in name or (unfreeze == "layer4" and name.startswith("layer4")):
+            param.requires_grad = True
+    head_params = [p for n, p in model.named_parameters() if "fc" in n]
+    backbone_params = [p for n, p in model.named_parameters() if "fc" not in n and p.requires_grad]
+    groups = [{"params": backbone_params, "lr": backbone_lr}, {"params": head_params, "lr": head_lr}]
+    optimizer = torch.optim.SGD(groups, momentum=momentum)
+    n_trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return optimizer, n_trainable
 
 
 def main():
     args = build_argparser().parse_args()
-    if args.mode not in (
-        "localized", "localized_gradcam", "localized_margin", "localized_random",
-        "localized_nopcbm_clip", "localized_nopcbm_gradcam",
-        "center", "random", "full", "none",
-    ) and not re.fullmatch(r"localized_m\d+", args.mode):
-        raise SystemExit(f"invalid --mode {args.mode}")
     common.seed_all(args.seed)
     device = torch.device(args.device if torch.cuda.is_available() or args.device == "cpu" else "cpu")
     epochs = args.epochs or config.TRAIN_DEFAULTS["epochs"][args.dataset]
     lr = args.lr or config.TRAIN_DEFAULTS["lr"]
     batch_size = args.batch_size or config.TRAIN_DEFAULTS["batch_size"]
-    tag = f"{args.dataset}_c{args.target_class}_{args.mode}_{args.labels}_{args.integrity}_s{args.seed}"
+    tag = f"{args.dataset}_c{args.target_class}_{args.mode}_{args.labels}_{args.integrity}_s{args.seed}_ft"
+    if args.unfreeze != "all":
+        tag += f"_{args.unfreeze}"
     run_dir = Path(args.out) if args.out else config.RUNS_DIR / tag
     run_dir.mkdir(parents=True, exist_ok=True)
     summary_path = run_dir / "summary.json"
@@ -85,6 +103,7 @@ def main():
             poison_paths = [files[position[i]] for i in selected_target]
     else:
         poison_paths = None
+
     case = config.CASES.get(args.dataset, {}).get(args.target_class, {})
     donor_class = case.get("donor_class", 0)
     poison_labels = common.replacement_labels(
@@ -104,9 +123,20 @@ def main():
     target_loader = DataLoader(target_eval, batch_size=64, shuffle=False, num_workers=args.num_workers)
 
     model = common.load_classifier(args.dataset, device)
-    params = common.freeze_backbone(model)
-    optimizer = torch.optim.SGD(params, lr=lr, momentum=config.TRAIN_DEFAULTS["momentum"])
+    optimizer, n_trainable = build_optimizer(
+        model, args.unfreeze, lr, args.backbone_lr, config.TRAIN_DEFAULTS["momentum"]
+    )
     criterion = nn.CrossEntropyLoss()
+    print(json.dumps({
+        "tag": tag,
+        "device": str(device),
+        "unfreeze": args.unfreeze,
+        "head_lr": lr,
+        "backbone_lr": args.backbone_lr,
+        "trainable_params": n_trainable,
+        "epochs": epochs,
+        "poison_files": len(files),
+    }))
 
     history = []
     train_start = time.time()
@@ -145,7 +175,7 @@ def main():
         history.append(record)
         with open(run_dir / "epochs.jsonl", "a") as f:
             f.write(json.dumps(record) + "\n")
-        print(json.dumps(record))
+        print(json.dumps(record), flush=True)
 
     torch.save(model, run_dir / "model.pkl")
     case = config.CASES.get(args.dataset, {}).get(args.target_class, {})
@@ -160,6 +190,9 @@ def main():
             "seed": args.seed,
             "epochs": epochs,
             "lr": lr,
+            "backbone_lr": args.backbone_lr,
+            "unfreeze": args.unfreeze,
+            "finetune": "full" if args.unfreeze == "all" else "layer4",
             "batch_size": batch_size,
             "donor_class": case.get("donor_class"),
             "donor_name": case.get("donor_name"),
